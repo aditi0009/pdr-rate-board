@@ -1,0 +1,360 @@
+<title>PDR Rate Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a fixed top bar with tabs; one centred column of 1100px; the report board is a list of
+   expandable rows, each row headed by the reaction in monospace, so the chemistry is the first thing read. */
+:root{
+  --bg:#f2f4f6; --surface:#ffffff; --surface-2:#e8ecef; --fg:#16212b; --fg-2:#54636f; --line:#cfd6dc;
+  --accent:#0f7c86; --accent-ink:#ffffff; --accent-soft:#d9eef0;
+  --missing:#b7791f; --wrong:#c0392b; --recheck:#6c4fbf; --update:#2b6cb0;
+  --open:#54636f; --review:#b7791f; --confirmed:#c0392b; --resolved:#1f8a4c; --disputed:#6c4fbf;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121a21; --surface:#1a242d; --surface-2:#243039; --fg:#e6ecf0; --fg-2:#9fb0bc; --line:#34434f;
+  --accent:#3fb7c2; --accent-ink:#0b1418; --accent-soft:#1d3a3f;
+  --missing:#e0a93f; --wrong:#ef6a5c; --recheck:#a58df0; --update:#6aa7e8;
+  --open:#9fb0bc; --review:#e0a93f; --confirmed:#ef6a5c; --resolved:#4fcf7e; --disputed:#a58df0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a21; --surface:#1a242d; --surface-2:#243039; --fg:#e6ecf0; --fg-2:#9fb0bc; --line:#34434f;
+  --accent:#3fb7c2; --accent-ink:#0b1418; --accent-soft:#1d3a3f;
+  --missing:#e0a93f; --wrong:#ef6a5c; --recheck:#a58df0; --update:#6aa7e8;
+  --open:#9fb0bc; --review:#e0a93f; --confirmed:#ef6a5c; --resolved:#4fcf7e; --disputed:#a58df0; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:baseline;gap:10px;font-weight:700;font-size:17px;letter-spacing:.01em}
+.brand small{font-weight:500;color:var(--fg-2);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--fg-2);padding:6px 11px;border-radius:7px;font-weight:500;font-size:14px}
+nav a.on{background:var(--accent-soft);color:var(--accent)}
+nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.who{margin-left:auto;font-size:13px;color:var(--fg-2);display:flex;align-items:center;gap:8px}
+.who img{width:22px;height:22px;border-radius:50%}
+main{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 60px}
+section[hidden]{display:none}
+h1{font-size:24px;margin:0 0 4px;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:17px;margin:26px 0 10px}
+.lead{color:var(--fg-2);max-width:68ch;margin:0 0 18px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0 20px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile b{display:block;font-size:24px;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile span{font-size:12px;color:var(--fg-2);text-transform:uppercase;letter-spacing:.06em}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.bar input,.bar select{height:34px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 9px;max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+input[type=text],input[type=url],input[type=number]{width:100%}
+.mono,code,.rxn{font-family:var(--mono)}
+button{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;padding:6px 12px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.small{padding:3px 9px;font-size:13px}
+button[disabled]{opacity:.5;cursor:default}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.row-h{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:11px 14px;cursor:pointer}
+.row-h:hover{background:var(--surface-2)}
+.stripe{width:5px;align-self:stretch;border-radius:3px;margin:2px 0}
+.rxn{font-size:15px;font-weight:500;word-break:break-word}
+.meta{font-size:12.5px;color:var(--fg-2);display:flex;gap:10px;flex-wrap:wrap;margin-top:3px}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid currentColor;line-height:1.4;white-space:nowrap}
+.right{text-align:right;font-size:12.5px;color:var(--fg-2);display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.votes{font-variant-numeric:tabular-nums;font-weight:600;color:var(--fg)}
+.row-b{border-top:1px solid var(--line);padding:12px 14px 14px;display:grid;grid-template-columns:1fr 1fr;gap:14px 24px}
+.row-b>div{min-width:0}
+.row-b .full{grid-column:1/-1}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:3px 12px;font-size:14px}
+.kv dt{color:var(--fg-2);margin:0}.kv dd{margin:0;word-break:break-word}
+.rate{font-family:var(--mono);font-size:13.5px;background:var(--surface-2);padding:6px 9px;border-radius:5px;display:inline-block}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.cmt{border-left:3px solid var(--line);padding:6px 10px;margin:6px 0;font-size:14px}
+.cmt .by{font-size:12px;color:var(--fg-2)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;max-width:900px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;font-weight:500;min-width:0}
+.form .full{grid-column:1/-1}
+.form .hint{font-weight:400;color:var(--fg-2);font-size:12.5px}
+.checks{display:flex;gap:6px 14px;flex-wrap:wrap;font-weight:400}
+.checks label{flex-direction:row;align-items:center;gap:5px;font-weight:400}
+.arr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.note{font-size:13px;color:var(--fg-2)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:22px;text-align:center;color:var(--fg-2)}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.post h3{margin:0 0 2px;font-size:16px}
+.post .body{white-space:pre-wrap;margin:6px 0 4px}
+.tag{font-size:12px;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:4px;margin-right:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grp{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.grp b{font-size:15px}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:14px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.about p{max-width:68ch}
+.about table{border-collapse:collapse;font-size:14px}
+.about td,.about th{border-bottom:1px solid var(--line);padding:5px 10px;text-align:left;vertical-align:top}
+.wide{overflow-x:auto}
+.ro{background:var(--surface-2);border-radius:6px;padding:8px 12px;font-size:13.5px;color:var(--fg-2);margin-bottom:12px}
+@media (max-width:720px){.row-b,.form,.grid2{grid-template-columns:1fr}.row-h{grid-template-columns:auto 1fr}.right{grid-column:2;align-items:flex-start;text-align:left}.arr{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+
+<header class="top"><div class="top-in">
+  <div class="brand">PDR Rate Board <small>reaction rates · community review</small></div>
+  <nav id="nav">
+    <a href="#reports" data-v="reports">Reports</a>
+    <a href="#submit" data-v="submit">Report a rate</a>
+    <a href="#discussion" data-v="discussion">Discussion</a>
+    <a href="#groups" data-v="groups">Groups</a>
+    <a href="#about" data-v="about">How it works</a>
+  </nav>
+  <div class="who" id="who"></div>
+</div></header>
+
+<main>
+<!-- ================= REPORTS ================= -->
+<section id="v-reports">
+  <h1>Reaction rates flagged by PDR modelling groups</h1>
+  <p class="lead">Rates that are missing from a network, look wrong, or need rechecking against the literature. Anyone in the community can add a report, confirm one they have seen too, and discuss it. Status changes are visible to everyone the moment they are made.</p>
+  <div class="tiles" id="tiles"></div>
+  <div class="bar">
+    <input type="search" id="q" placeholder="search reaction, species, database, reference" style="flex:1 1 240px">
+    <select id="f-type"><option value="">all issue types</option><option value="missing">missing</option><option value="wrong">wrong</option><option value="recheck">needs recheck</option><option value="update">newer rate available</option></select>
+    <select id="f-status"><option value="">all statuses</option><option value="open">open</option><option value="review">under review</option><option value="confirmed">confirmed</option><option value="resolved">resolved</option><option value="disputed">disputed</option></select>
+    <select id="f-db"><option value="">all databases</option></select>
+    <select id="sort"><option value="new">newest first</option><option value="votes">most confirmed</option><option value="temp">by temperature range</option></select>
+  </div>
+  <div class="ro" id="ro-note" hidden></div>
+  <div class="list" id="reports"></div>
+</section>
+
+<!-- ================= SUBMIT ================= -->
+<section id="v-submit" hidden>
+  <h1>Report a reaction rate</h1>
+  <p class="lead">One reaction per report. Give the reaction as you write it in your network, name the database or network it concerns, and say what you found. A reference and a temperature range make it checkable by others.</p>
+  <form class="form" id="form">
+    <label class="full">Reaction <span class="hint">as in the network, e.g. <code>C+ + H2 → CH+ + H</code>; write → or -&gt;</span>
+      <input type="text" id="r-rxn" class="mono" required placeholder="A + B → C + D"></label>
+    <label>Issue type
+      <select id="r-type" required>
+        <option value="missing">missing from the network</option>
+        <option value="wrong">rate looks wrong</option>
+        <option value="recheck">needs recheck</option>
+        <option value="update">newer measurement available</option>
+      </select></label>
+    <label>Priority
+      <select id="r-prio"><option value="normal">normal</option><option value="high">high: changes abundances by more than a factor of a few</option><option value="low">low: bookkeeping</option></select></label>
+    <div class="full"><div style="font-size:13.5px;font-weight:500;margin-bottom:4px">Databases or networks concerned</div>
+      <div class="checks" id="r-dbs"></div>
+      <input type="text" id="r-db-other" placeholder="other (name it)" style="margin-top:6px;max-width:320px"></div>
+    <label class="full">What is missing or wrong <span class="hint">what you compared, how large the effect is, under which conditions</span>
+      <textarea id="r-desc" required></textarea></label>
+    <div class="full"><div style="font-size:13.5px;font-weight:500">Rate as given in the database <span class="hint">modified Arrhenius, k = α (T/300 K)^β exp(−γ/T); leave blank if missing</span></div>
+      <div class="arr"><input type="text" id="r-a0" class="mono" placeholder="α [cm³ s⁻¹ or s⁻¹]"><input type="text" id="r-b0" class="mono" placeholder="β"><input type="text" id="r-g0" class="mono" placeholder="γ [K]"></div></div>
+    <div class="full"><div style="font-size:13.5px;font-weight:500">Suggested rate <span class="hint">if you have one</span></div>
+      <div class="arr"><input type="text" id="r-a1" class="mono" placeholder="α"><input type="text" id="r-b1" class="mono" placeholder="β"><input type="text" id="r-g1" class="mono" placeholder="γ [K]"></div></div>
+    <label>Temperature range <span class="hint">where it matters, in K</span>
+      <input type="text" id="r-trange" placeholder="10–300"></label>
+    <label>Reference <span class="hint">DOI, ADS link or citation</span>
+      <input type="text" id="r-ref" placeholder="10.1093/mnras/… or Author+year"></label>
+    <label>Your group or code <span class="hint">how others should address you</span>
+      <input type="text" id="r-group" placeholder="e.g. KOSMA-τ (Cologne), Meudon PDR, Cloudy, UCL_PDR"></label>
+    <label>Species to tag <span class="hint">comma separated</span>
+      <input type="text" id="r-species" class="mono" placeholder="CH+, C+, H2"></label>
+    <div class="full actions"><button type="submit" class="primary" id="r-go">Add report</button><span class="note" id="r-note"></span></div>
+  </form>
+</section>
+
+<!-- ================= DISCUSSION ================= -->
+<section id="v-discussion" hidden>
+  <h1>Discussion</h1>
+  <p class="lead">For anything wider than one rate: a network comparison, a benchmark you want to run with others, a question about a database release, a call for a joint test.</p>
+  <form class="form" id="pform" style="margin-bottom:18px">
+    <label class="full">Title <input type="text" id="p-title" required></label>
+    <label class="full">Text <textarea id="p-body" required></textarea></label>
+    <label>Tags <span class="hint">comma separated</span><input type="text" id="p-tags" placeholder="benchmark, UDfA22, photodissociation"></label>
+    <label>Your group <input type="text" id="p-group"></label>
+    <div class="full actions"><button type="submit" class="primary">Post</button><span class="note" id="p-note"></span></div>
+  </form>
+  <div class="list" id="posts"></div>
+</section>
+
+<!-- ================= GROUPS ================= -->
+<section id="v-groups" hidden>
+  <h1>Groups and codes</h1>
+  <p class="lead">Who is on the board and which code and network they run, so a report can be routed to the people who maintain the network it concerns.</p>
+  <form class="form" id="gform" style="margin-bottom:18px">
+    <label>Group or institute <input type="text" id="g-name" required></label>
+    <label>Code <input type="text" id="g-code" placeholder="KOSMA-τ, Meudon PDR, Cloudy, UCL_PDR, 3D-PDR…"></label>
+    <label>Chemical network used <input type="text" id="g-net" placeholder="UDfA22, KIDA 2024, own…"></label>
+    <label>Contact <span class="hint">a name; email only if you want it public</span><input type="text" id="g-contact"></label>
+    <div class="full actions"><button type="submit" class="primary">Add group</button><span class="note" id="g-note"></span></div>
+  </form>
+  <div class="grid2" id="groups"></div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="v-about" hidden class="about">
+  <h1>How the board works</h1>
+  <p>Every report is one reaction in one or more databases or networks, with what was found and, where possible, the rate as given, a suggested rate and a reference. The board is live: what one group adds, every open page sees within seconds.</p>
+  <h2>Issue types</h2>
+  <div class="wide"><table>
+    <tr><th>Type</th><th>Meaning</th></tr>
+    <tr><td><span class="pill" style="color:var(--missing)">missing</span></td><td>The reaction is not in the network although it matters in PDR conditions.</td></tr>
+    <tr><td><span class="pill" style="color:var(--wrong)">wrong</span></td><td>The rate coefficient, its temperature dependence or its branching disagrees with the measurement or calculation it cites, or with other databases, by more than the stated uncertainty.</td></tr>
+    <tr><td><span class="pill" style="color:var(--recheck)">recheck</span></td><td>Suspicious but not settled: an odd temperature extrapolation, a rate copied between databases without a source, an abundance effect that nobody has traced to a reaction yet.</td></tr>
+    <tr><td><span class="pill" style="color:var(--update)">update</span></td><td>A newer measurement or calculation exists and the database still carries the old value.</td></tr>
+  </table></div>
+  <h2>Statuses</h2>
+  <div class="wide"><table>
+    <tr><td><span class="pill" style="color:var(--open)">open</span></td><td>Reported, nobody has checked it yet.</td></tr>
+    <tr><td><span class="pill" style="color:var(--review)">under review</span></td><td>A group is checking it. Say so in a comment.</td></tr>
+    <tr><td><span class="pill" style="color:var(--confirmed)">confirmed</span></td><td>A second group has reproduced it.</td></tr>
+    <tr><td><span class="pill" style="color:var(--resolved)">resolved</span></td><td>Fixed in the database, or shown to be fine, with the reason in the comments.</td></tr>
+    <tr><td><span class="pill" style="color:var(--disputed)">disputed</span></td><td>Groups disagree. Keep the argument in the comments until it settles.</td></tr>
+  </table></div>
+  <h2>Rate notation</h2>
+  <p>Rates are written in the modified Arrhenius form used by UDfA and KIDA, k = α (T/300 K)<sup>β</sup> exp(−γ/T), with α in cm³ s⁻¹ for two-body reactions and s⁻¹ for photo- and cosmic-ray processes. For photoreactions give α as the unshielded rate in the Draine field and note the attenuation exponent in the description. If a database uses a different form, say which.</p>
+  <h2>Who can write</h2>
+  <p>Signed-in members of the hosting organisation and invited contributors can add reports, confirm them, comment and change statuses. Visitors arriving through a public link can read everything but not write. Each report records who added it; confirmations are one per person.</p>
+  <h2>Good practice</h2>
+  <p>One reaction per report. Quote the database entry number or line where you can. Give the condition under which the effect was seen, density, temperature, field, since many rates only matter in one corner of PDR parameter space. When you resolve a report, say what changed and where.</p>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s); const el=(t,c,txt)=>{const e=document.createElement(t); if(c) e.className=c; if(txt!=null) e.textContent=txt; return e;};
+const DBS=['UDfA12','UDfA22','KIDA 2014','KIDA 2024','OSU','Cloudy','NL97','NL99','Meudon PDR','UCL_PDR','3D-PDR','own network'];
+const TYPE={missing:['missing','--missing'],wrong:['wrong','--wrong'],recheck:['recheck','--recheck'],update:['update','--update']};
+const STAT={open:['open','--open'],review:['under review','--review'],confirmed:['confirmed','--confirmed'],resolved:['resolved','--resolved'],disputed:['disputed','--disputed']};
+const VIEWS=['reports','submit','discussion','groups','about'];
+let db=null,user=null,uid=null,canWrite=null,reports=[],posts=[],groups=[],myVotes={},open={},cmtUnsub={};
+const toast=m=>{const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600);};
+const fmtDate=s=>{try{return new Date(s).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});}catch(e){return '';}};
+const arrow=s=>s.replace(/->|-->|=>/g,'→');
+const esc=s=>String(s==null?'':s);
+const rateStr=r=>{if(!r||(!r.a&&!r.b&&!r.g)) return ''; return 'k = '+(r.a||'?')+' (T/300)^'+(r.b||'0')+' exp(−'+(r.g||'0')+'/T)';};
+
+// ---------- routing
+function route(){let h=(location.hash||'#reports').slice(1); if(!VIEWS.includes(h)) h='reports';
+  VIEWS.forEach(v=>{$('#v-'+v).hidden=v!==h;}); document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===h));
+  if(h==='reports') try{localStorage.setItem('prb.view','reports');}catch(e){} }
+window.addEventListener('hashchange',route); route();
+
+// ---------- form scaffolding
+const dbsBox=$('#r-dbs'); DBS.forEach(d=>{const l=el('label'); const c=el('input'); c.type='checkbox'; c.value=d; c.id='db-'+d.replace(/\W/g,'_'); l.append(c,document.createTextNode(d)); dbsBox.append(l);});
+const fdb=$('#f-db'); DBS.forEach(d=>{const o=el('option','',d); o.value=d; fdb.append(o);});
+['#q','#f-type','#f-status','#f-db','#sort'].forEach(s=>$(s).addEventListener('input',renderReports));
+try{const f=JSON.parse(localStorage.getItem('prb.filters')||'{}'); if(f.type)$('#f-type').value=f.type; if(f.status)$('#f-status').value=f.status;}catch(e){}
+
+// ---------- pills
+function pill(map,key){const [lab,v]=map[key]||[key,'--open']; const p=el('span','pill',lab); p.style.color='var('+v+')'; return p;}
+function names(ids,cb){ if(!user||!ids.length){cb({});return;} user.profiles(ids).then(cb).catch(()=>cb({})); }
+
+// ---------- reports
+function tiles(){const t=$('#tiles'); t.replaceChildren();
+  const n=k=>reports.filter(r=>r.status===k).length;
+  [['open reports',reports.filter(r=>r.status!=='resolved').length],['confirmed',n('confirmed')],['under review',n('review')],['resolved',n('resolved')],['missing',reports.filter(r=>r.type==='missing').length],['wrong',reports.filter(r=>r.type==='wrong').length]]
+   .forEach(([l,v])=>{const d=el('div','tile'); d.append(el('b','',String(v)),el('span','',l)); t.append(d);});}
+function renderReports(){ tiles();
+  const q=$('#q').value.trim().toLowerCase(), ft=$('#f-type').value, fs=$('#f-status').value, fd=$('#f-db').value, so=$('#sort').value;
+  try{localStorage.setItem('prb.filters',JSON.stringify({type:ft,status:fs}));}catch(e){}
+  let rs=reports.filter(r=>(!ft||r.type===ft)&&(!fs||r.status===fs)&&(!fd||(r.dbs||[]).includes(fd))&&(!q||[r.rxn,r.desc,(r.species||[]).join(' '),(r.dbs||[]).join(' '),r.ref,r.group].join(' ').toLowerCase().includes(q)));
+  if(so==='votes') rs.sort((a,b)=>(b.votes||0)-(a.votes||0)||(b.created||'').localeCompare(a.created||''));
+  else if(so==='temp') rs.sort((a,b)=>(parseFloat(a.trange)||1e9)-(parseFloat(b.trange)||1e9));
+  else rs.sort((a,b)=>(b.created||'').localeCompare(a.created||''));
+  const box=$('#reports'); box.replaceChildren();
+  if(!reports.length){const e=el('div','empty'); e.append(el('div','',db?'No reports yet.':'Loading the board…'),el('div','note',db?'The first one goes in under "Report a rate": a reaction, the database it concerns, and what you found.':'If nothing appears after a few seconds the store cannot be reached; try again later.')); box.append(e); return;}
+  if(!rs.length){box.append(el('div','empty','Nothing matches these filters.')); return;}
+  const ids=[...new Set(rs.map(r=>r.by).filter(Boolean))];
+  names(ids,ps=>{ rs.forEach(r=>box.append(reportRow(r,ps))); });
+}
+function reportRow(r,ps){
+  const row=el('div','row'); const h=el('div','row-h'); const st=el('div','stripe'); st.style.background='var('+(TYPE[r.type]||TYPE.recheck)[1]+')';
+  const mid=el('div'); mid.append(el('div','rxn',arrow(esc(r.rxn))));
+  const m=el('div','meta'); m.append(pill(TYPE,r.type),pill(STAT,r.status||'open'));
+  (r.dbs||[]).forEach(d=>m.append(el('span','mono',d))); if(r.trange) m.append(el('span','',r.trange+' K')); if(r.prio==='high') m.append(el('span','',' high priority'));
+  mid.append(m);
+  const rt=el('div','right'); const v=el('div','votes',(r.votes||0)+' confirm'+((r.votes||0)===1?'':'s')); rt.append(v);
+  const who=(ps[r.by]&&ps[r.by].name)||''; rt.append(el('div','',(r.group||who||'a group')+' · '+fmtDate(r.created)));
+  h.append(st,mid,rt); row.append(h);
+  h.addEventListener('click',()=>{open[r.id]=!open[r.id]; if(!open[r.id]&&cmtUnsub[r.id]){cmtUnsub[r.id](); delete cmtUnsub[r.id];} renderReports();});
+  if(open[r.id]){const b=el('div','row-b');
+    const left=el('div'); const p=el('p','',esc(r.desc)); p.style.whiteSpace='pre-wrap'; p.style.margin='0 0 8px'; left.append(p);
+    if(rateStr(r.rate0)){left.append(el('div','note','as given:')); left.append(el('div','rate',rateStr(r.rate0)));}
+    if(rateStr(r.rate1)){left.append(el('div','note','suggested:')); left.append(el('div','rate',rateStr(r.rate1)));}
+    const right=el('div'); const kv=el('dl','kv');
+    const add=(k,val)=>{if(!val) return; kv.append(el('dt','',k)); const dd=el('dd'); if(k==='reference'&&/^https?:/.test(val)){const a=el('a','',val); a.href=val; a.target='_blank'; a.rel='noopener'; dd.append(a);} else if(k==='reference'&&/^10\.\d+\//.test(val)){const a=el('a','',val); a.href='https://doi.org/'+val; a.target='_blank'; a.rel='noopener'; dd.append(a);} else dd.textContent=val; kv.append(dd);};
+    add('species',(r.species||[]).join(', ')); add('databases',(r.dbs||[]).join(', ')); add('temperature',r.trange?r.trange+' K':''); add('reference',r.ref); add('reported by',(r.group||'')+(who?' ('+who+')':'')); add('priority',r.prio); add('last change',r.changedBy&&ps[r.changedBy]&&ps[r.changedBy].name?ps[r.changedBy].name+' · '+fmtDate(r.changed):(r.changed?fmtDate(r.changed):''));
+    right.append(kv);
+    const act=el('div','actions full');
+    const vb=el('button','small',myVotes[r.id]?'✓ I see this too':'I see this too'); vb.disabled=canWrite===false||!uid; vb.addEventListener('click',()=>vote(r)); act.append(vb);
+    const sel=el('select'); Object.keys(STAT).forEach(k=>{const o=el('option','',STAT[k][0]); o.value=k; if(k===(r.status||'open')) o.selected=true; sel.append(o);}); sel.disabled=canWrite===false; sel.addEventListener('change',()=>setStatus(r,sel.value)); act.append(el('span','note','status:'),sel);
+    if(uid&&(r.by===uid)){const del=el('button','small','delete my report'); del.addEventListener('click',()=>{if(del.dataset.arm){delReport(r);} else {del.dataset.arm='1'; del.textContent='click again to delete';}}); act.append(del);}
+    const cp=el('button','small','copy as text'); cp.addEventListener('click',()=>{const t=[arrow(r.rxn),TYPE[r.type][0]+' · '+STAT[r.status||'open'][0],(r.dbs||[]).join(', '),r.desc,rateStr(r.rate0)&&('as given: '+rateStr(r.rate0)),rateStr(r.rate1)&&('suggested: '+rateStr(r.rate1)),r.ref].filter(Boolean).join('\n'); navigator.clipboard.writeText(t).then(()=>toast('Copied'),()=>toast('Copy blocked; select the text instead'));}); act.append(cp);
+    const cm=el('div','full'); cm.append(el('h2','','Comments')); cm.style.marginTop='4px'; const cl=el('div'); cl.id='cmts-'+r.id; cl.append(el('div','note','loading…')); cm.append(cl);
+    const cf=el('form'); const ta=el('textarea'); ta.placeholder=canWrite===false?'Sign in as a contributor to comment':'Add what you checked, with numbers'; ta.style.minHeight='60px'; ta.disabled=canWrite===false; const cb=el('button','small primary','Comment'); cb.disabled=canWrite===false; cb.style.marginTop='6px'; cf.append(ta,cb);
+    cf.addEventListener('submit',e=>{e.preventDefault(); const t=ta.value.trim(); if(!t) return; cb.disabled=true; db.collection('reports/'+r.id+'/comments').add({text:t,by:uid,created:new Date().toISOString()}).then(()=>{ta.value=''; cb.disabled=false;},err=>{cb.disabled=false; toast(err&&err.code==='invalid_argument'?'You cannot write here':'Could not save: '+(err&&err.message||''));});});
+    cm.append(cf);
+    b.append(left,right,act,cm); row.append(b);
+    if(db&&!cmtUnsub[r.id]) cmtUnsub[r.id]=db.collection('reports/'+r.id+'/comments').orderBy('created','asc').limit(200).onSnapshot(s=>{
+      const l=document.getElementById('cmts-'+r.id); if(!l) return; const cs=s.docs.map(d=>({id:d.id,...d.data()})); const ids=[...new Set(cs.map(c=>c.by).filter(Boolean))];
+      names(ids,ps2=>{ l.replaceChildren(); if(!cs.length){l.append(el('div','note','No comments yet.')); return;} cs.forEach(c=>{const d=el('div','cmt'); const body=el('div','',esc(c.text)); body.style.whiteSpace='pre-wrap'; d.append(body,el('div','by',((ps2[c.by]&&ps2[c.by].name)||'someone')+' · '+fmtDate(c.created))); l.append(d);}); });
+    },()=>{const l=document.getElementById('cmts-'+r.id); if(l) l.replaceChildren(el('div','note','Comments cannot be loaded.'));});
+  }
+  return row;
+}
+async function vote(r){ if(!db||!uid) return; const had=!!myVotes[r.id]; const nv={...myVotes}; if(had) delete nv[r.id]; else nv[r.id]=true;
+  try{ await db.doc('votes/'+uid).set({ids:nv}); myVotes=nv; await db.doc('reports/'+r.id).update({votes:Math.max(0,(r.votes||0)+(had?-1:1))}); toast(had?'Confirmation withdrawn':'Confirmed'); }catch(e){ toast(e&&e.code==='invalid_argument'?'You cannot write here':'Could not save'); } }
+async function setStatus(r,s){ if(!db) return; try{ await db.doc('reports/'+r.id).update({status:s,changed:new Date().toISOString(),changedBy:uid}); toast('Status: '+STAT[s][0]); }catch(e){ toast(e&&e.code==='invalid_argument'?'You cannot change statuses here':'Could not save'); renderReports(); } }
+async function delReport(r){ try{ await db.doc('reports/'+r.id).delete(); toast('Deleted'); }catch(e){ toast('Could not delete'); } }
+
+$('#form').addEventListener('submit',async e=>{e.preventDefault(); if(!db){toast('The store is not reachable');return;}
+  const dbs=[...dbsBox.querySelectorAll('input:checked')].map(c=>c.value); const oth=$('#r-db-other').value.trim(); if(oth) dbs.push(oth);
+  const rate=(a,b,g)=>({a:$(a).value.trim(),b:$(b).value.trim(),g:$(g).value.trim()});
+  const doc={rxn:arrow($('#r-rxn').value.trim()),type:$('#r-type').value,prio:$('#r-prio').value,dbs,desc:$('#r-desc').value.trim(),rate0:rate('#r-a0','#r-b0','#r-g0'),rate1:rate('#r-a1','#r-b1','#r-g1'),trange:$('#r-trange').value.trim(),ref:$('#r-ref').value.trim(),group:$('#r-group').value.trim(),species:$('#r-species').value.split(',').map(s=>s.trim()).filter(Boolean),status:'open',votes:0,by:uid,created:new Date().toISOString()};
+  const go=$('#r-go'); go.disabled=true; $('#r-note').textContent='saving…';
+  try{ await db.collection('reports').add(doc); try{localStorage.setItem('prb.group',doc.group);}catch(x){} $('#form').reset(); $('#r-group').value=doc.group; $('#r-note').textContent=''; toast('Report added'); location.hash='#reports'; }
+  catch(err){ $('#r-note').textContent=err&&err.code==='invalid_argument'?'You cannot write to this board (view-only access).':err&&err.code==='quota_exceeded'?'The board is full; ask the owner to archive resolved reports.':'Could not save: '+(err&&err.message||'unknown error'); }
+  go.disabled=false; });
+try{const g=localStorage.getItem('prb.group'); if(g){$('#r-group').value=g; $('#p-group').value=g;}}catch(e){}
+
+// ---------- discussion
+function renderPosts(){ const box=$('#posts'); box.replaceChildren(); if(!posts.length){box.append(el('div','empty',db?'No posts yet. Start one above.':'Loading…')); return;}
+  const ids=[...new Set(posts.map(p=>p.by).filter(Boolean))];
+  names(ids,ps=>{ posts.forEach(p=>{const d=el('div','post'); d.append(el('h3','',esc(p.title))); const m=el('div','meta'); (p.tags||[]).forEach(t=>m.append(el('span','tag',t))); m.append(el('span','',(p.group||(ps[p.by]&&ps[p.by].name)||'a group')+' · '+fmtDate(p.created))); d.append(m); d.append(el('div','body',esc(p.body)));
+    const rl=el('div'); rl.id='re-'+p.id; d.append(rl);
+    const f=el('form'); const ta=el('textarea'); ta.style.minHeight='48px'; ta.placeholder=canWrite===false?'Sign in as a contributor to reply':'Reply'; ta.disabled=canWrite===false; const b=el('button','small','Reply'); b.disabled=canWrite===false; b.style.marginTop='4px'; f.append(ta,b);
+    f.addEventListener('submit',e=>{e.preventDefault(); const t=ta.value.trim(); if(!t) return; b.disabled=true; db.collection('posts/'+p.id+'/replies').add({text:t,by:uid,created:new Date().toISOString()}).then(()=>{ta.value=''; b.disabled=false;},()=>{b.disabled=false; toast('Could not save');});});
+    d.append(f); box.append(d);
+    if(db&&!cmtUnsub['p'+p.id]) cmtUnsub['p'+p.id]=db.collection('posts/'+p.id+'/replies').orderBy('created','asc').limit(200).onSnapshot(s=>{const l=document.getElementById('re-'+p.id); if(!l) return; const cs=s.docs.map(x=>({id:x.id,...x.data()})); names([...new Set(cs.map(c=>c.by).filter(Boolean))],ps2=>{l.replaceChildren(); cs.forEach(c=>{const q=el('div','cmt'); const body=el('div','',esc(c.text)); body.style.whiteSpace='pre-wrap'; q.append(body,el('div','by',((ps2[c.by]&&ps2[c.by].name)||'someone')+' · '+fmtDate(c.created))); l.append(q);});});});
+  }); }); }
+$('#pform').addEventListener('submit',async e=>{e.preventDefault(); if(!db) return; const doc={title:$('#p-title').value.trim(),body:$('#p-body').value.trim(),tags:$('#p-tags').value.split(',').map(s=>s.trim()).filter(Boolean),group:$('#p-group').value.trim(),by:uid,created:new Date().toISOString()};
+  $('#p-note').textContent='saving…'; try{ await db.collection('posts').add(doc); $('#pform').reset(); $('#p-group').value=doc.group; $('#p-note').textContent=''; toast('Posted'); }catch(err){ $('#p-note').textContent=err&&err.code==='invalid_argument'?'You cannot write to this board.':'Could not save.'; } });
+
+// ---------- groups
+function renderGroups(){ const box=$('#groups'); box.replaceChildren(); if(!groups.length){const e=el('div','empty',db?'No groups listed yet. Add yours above.':'Loading…'); e.style.gridColumn='1/-1'; box.append(e); return;}
+  groups.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(g=>{const d=el('div','grp'); d.append(el('b','',esc(g.name))); const m=el('div','meta'); if(g.code) m.append(el('span','',g.code)); if(g.net) m.append(el('span','mono',g.net)); if(g.contact) m.append(el('span','',g.contact)); d.append(m); box.append(d);}); }
+$('#gform').addEventListener('submit',async e=>{e.preventDefault(); if(!db) return; const doc={name:$('#g-name').value.trim(),code:$('#g-code').value.trim(),net:$('#g-net').value.trim(),contact:$('#g-contact').value.trim(),by:uid,created:new Date().toISOString()};
+  $('#g-note').textContent='saving…'; try{ await db.collection('groups').add(doc); $('#gform').reset(); $('#g-note').textContent=''; toast('Group added'); }catch(err){ $('#g-note').textContent=err&&err.code==='invalid_argument'?'You cannot write to this board.':'Could not save.'; } });
+
+// ---------- boot
+renderReports(); renderPosts(); renderGroups();
+(async()=>{
+  user=await (window.claude&&claude.use?claude.use('user'):Promise.resolve(null));
+  if(user){ try{ const me=await user.me(); uid=me.id; canWrite=await user.can('data.write'); const w=$('#who'); if(me.name||me.id){const img=el('img'); img.src=me.avatarUrl; img.alt=''; w.append(img, el('span','',me.name||'you'));} }catch(e){} }
+  if(canWrite===false){ const n=$('#ro-note'); n.hidden=false; n.textContent='You can read the board but not write to it: the owner can give you contributor access.'; }
+  db=await (window.claude&&claude.use?claude.use('db'):Promise.resolve(null));
+  if(!db){ $('#reports').replaceChildren(el('div','empty','The shared store is not available in this view. Open the page signed in on claude.ai to see and add reports.')); return; }
+  let timer=setTimeout(()=>toast('Still waiting for the store…'),10000);
+  db.collection('reports').orderBy('created','desc').limit(500).onSnapshot(s=>{ if(!s.metadata.fromCache){clearTimeout(timer);} reports=s.docs.map(d=>({id:d.id,...d.data()})); renderReports(); },e=>{clearTimeout(timer); $('#reports').replaceChildren(el('div','empty','Reports cannot be loaded: '+e.code));});
+  db.collection('posts').orderBy('created','desc').limit(300).onSnapshot(s=>{ posts=s.docs.map(d=>({id:d.id,...d.data()})); renderPosts(); },()=>{});
+  db.collection('groups').limit(300).onSnapshot(s=>{ groups=s.docs.map(d=>({id:d.id,...d.data()})); renderGroups(); },()=>{});
+  if(uid) db.doc('votes/'+uid).onSnapshot(s=>{ myVotes=(s.exists&&s.data().ids)||{}; renderReports(); },()=>{});
+})();
+})();
+</script>
