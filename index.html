@@ -1,8 +1,9 @@
+<meta charset="utf-8">
 <title>PDR Rate Board</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a fixed top bar with tabs; one centred column of 1100px; the report board is a list of
+/* Layout: a fixed top bar with tabs; one centred column of 1680px; the report board is a list of
    expandable rows, each row headed by the reaction in monospace, so the chemistry is the first thing read. */
 :root{
   --bg:#f2f4f6; --surface:#ffffff; --surface-2:#e8ecef; --fg:#16212b; --fg-2:#54636f; --line:#cfd6dc;
@@ -27,7 +28,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 a{color:var(--accent)}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-block:10px}
+.top-in{max-width:1680px;margin:0 auto;display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-block:10px}
 .brand{display:flex;align-items:baseline;gap:10px;font-weight:700;font-size:17px;letter-spacing:.01em}
 .brand small{font-weight:500;color:var(--fg-2);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
 nav{display:flex;gap:2px;flex-wrap:wrap}
@@ -36,7 +37,7 @@ nav a.on{background:var(--accent-soft);color:var(--accent)}
 nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .who{margin-left:auto;font-size:13px;color:var(--fg-2);display:flex;align-items:center;gap:8px}
 .who img{width:22px;height:22px;border-radius:50%}
-main{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 60px}
+main{max-width:1680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:22px 60px}
 section[hidden]{display:none}
 h1{font-size:24px;margin:0 0 4px;text-wrap:balance;letter-spacing:-.01em}
 h2{font-size:17px;margin:26px 0 10px}
@@ -97,6 +98,58 @@ button[disabled]{opacity:.5;cursor:default}
 .about td,.about th{border-bottom:1px solid var(--line);padding:5px 10px;text-align:left;vertical-align:top}
 .wide{overflow-x:auto}
 .ro{background:var(--surface-2);border-radius:6px;padding:8px 12px;font-size:13.5px;color:var(--fg-2);margin-bottom:12px}
+/* Advisor + code reference. Every capability is a claim with a verbatim quote behind it; the quote
+   block (.ev) is the one distinctive element, everything else reuses the board's tokens. */
+.adv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;align-items:start}
+.adv-q fieldset{border:0;margin:0 0 22px;padding:0;min-width:0}
+.adv-q legend{font-weight:600;font-size:15px;padding:0;margin-bottom:2px;text-wrap:balance}
+.adv-q .hint{font-size:13px;color:var(--fg-2);margin:0 0 8px;text-wrap:pretty}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opt{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;font-size:14px;line-height:1.3;transition-property:border-color,background-color;transition-duration:120ms}
+.opt:hover{border-color:var(--fg-2)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.opt input{margin:0;accent-color:var(--accent)}
+.adv-r h2{margin-top:0}
+.gaps{font-size:13.5px;margin:4px 0 2px;text-wrap:pretty}
+.grp-h{font-size:13px;font-weight:600;color:var(--fg-2);margin:12px 0 4px;padding-top:8px;border-top:1px solid var(--line)}
+.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.rk{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.rk.top{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.rk-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.rk-h b{font-size:16px}
+.rk-h .score{margin-left:auto;font-size:13px;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.rk .tagline{font-size:13px;color:var(--fg-2);margin:2px 0 6px}
+.why{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.why>li{display:grid;grid-template-columns:1.3em 1fr;gap:4px}
+.mk{font-family:var(--mono);font-weight:500;text-align:center}
+.mk.yes{color:var(--resolved)}.mk.partial{color:var(--review)}.mk.no{color:var(--wrong)}.mk.none{color:var(--fg-2)}
+.ev{margin:2px 0 2px}
+.ev summary{cursor:pointer;font-size:12.5px;color:var(--accent);width:fit-content;padding:2px 0}
+.ev blockquote{margin:6px 0 4px;padding:8px 12px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 6px 6px 0;font-size:13.5px;text-wrap:pretty}
+.ev .src{font-size:12.5px;color:var(--fg-2)}
+.mx{border-collapse:separate;border-spacing:0;font-size:14px;min-width:720px;width:100%;table-layout:fixed}
+.mx thead th:first-child{width:28%}
+.mx th,.mx td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.mx thead th{font-weight:600;background:var(--surface);position:sticky;top:0}
+.mx tbody th{font-weight:500;position:sticky;left:0;background:var(--bg);min-width:200px}
+.mx td span.mk{display:inline-block;width:1.2em}
+.code{border-top:1px solid var(--line);margin-top:30px;padding-top:6px}
+.code h2{font-size:20px;margin:16px 0 2px}
+.code .links{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;margin:6px 0 12px}
+.code .kv{grid-template-columns:180px minmax(0,1fr);gap:6px 16px}
+.caps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;font-size:14.5px;max-width:80ch}
+.caps>li{display:grid;grid-template-columns:1.3em 1fr;gap:4px}
+.caps .lbl{font-weight:500}
+.srcs{font-size:13.5px;padding-left:1.4em;max-width:90ch}
+.srcs li{margin-bottom:4px;text-wrap:pretty}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.code h3{font-size:15px;margin:18px 0 8px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--fg-2);margin:0 0 10px}
+.jump{display:none}
+.adv-r:focus{outline:none}
+@media (max-width:860px){.adv{grid-template-columns:1fr}.jump{display:inline-block}}
+@media (max-width:520px){.opts{grid-template-columns:1fr}.code .kv{grid-template-columns:1fr}.code .kv dt{margin-top:6px}}
 @media (max-width:720px){.row-b,.form,.grid2{grid-template-columns:1fr}.row-h{grid-template-columns:auto 1fr}.right{grid-column:2;align-items:flex-start;text-align:left}.arr{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
@@ -108,6 +161,8 @@ button[disabled]{opacity:.5;cursor:default}
     <a href="#submit" data-v="submit">Report a rate</a>
     <a href="#discussion" data-v="discussion">Discussion</a>
     <a href="#groups" data-v="groups">Groups</a>
+    <a href="#advisor" data-v="advisor">Choose a code</a>
+    <a href="#codes" data-v="codes">Codes</a>
     <a href="#about" data-v="about">How it works</a>
   </nav>
   <div class="who" id="who"></div>
@@ -195,6 +250,29 @@ button[disabled]{opacity:.5;cursor:default}
   <div class="grid2" id="groups"></div>
 </section>
 
+<!-- ================= ADVISOR ================= -->
+<section id="v-advisor" hidden>
+  <h1>Which PDR code fits your object?</h1>
+  <p class="lead">Answer what you know; the ranking updates as you go. Every reason shown comes from a published paper, official documentation or the code's repository, with the quoted passage one click away. Where our sources say nothing, the advisor says "not documented" rather than guessing.</p>
+  <div class="adv">
+    <form class="adv-q" id="adv-form" aria-label="Describe your object"></form>
+    <div class="adv-r" id="adv-out" tabindex="-1"></div>
+    <div class="sr" role="status" id="adv-status"></div>
+  </div>
+</section>
+
+<!-- ================= CODES ================= -->
+<section id="v-codes" hidden>
+  <h1>The codes, side by side</h1>
+  <p class="lead">What each code assumes and what it can do, as stated by its own papers and documentation. Open any claim to read the passage it rests on. Gaps mean our sources are silent, not that the code cannot do it: check the official documentation linked under each code.</p>
+  <div class="legend" id="mx-legend"></div>
+  <div class="wide"><table class="mx" id="mx"></table></div>
+  <div id="code-list"></div>
+  <h2 id="sources">Sources</h2>
+  <p class="note">Retrieved 16 November 2026 from the arXiv API, the official websites and the repositories at the commits given.</p>
+  <ol class="srcs" id="src-list"></ol>
+</section>
+
 <!-- ================= ABOUT ================= -->
 <section id="v-about" hidden class="about">
   <h1>How the board works</h1>
@@ -225,13 +303,837 @@ button[disabled]{opacity:.5;cursor:default}
 </main>
 <div class="toast" id="toast"></div>
 
+<!-- Knowledge base for the advisor and the Codes tab. Rule: every claim carries a source id and the
+     verbatim passage it rests on. A capability with no sourced statement is simply absent ("not documented").
+     v: yes | partial | no. Retrieved 2026-11-16. -->
+<script type="application/json" id="pdr-kb">
+{
+ "caps": {
+  "pdr": "FUV-illuminated PDR physics",
+  "diffuse": "Diffuse clouds",
+  "cores": "Dark clouds and dense cores",
+  "hii": "H II region and PDR in one model",
+  "xray": "X-ray irradiation",
+  "shocks": "Shocks",
+  "disk": "Protoplanetary disks",
+  "hydro": "Density structure from simulations",
+  "geom3d": "Three-dimensional geometry",
+  "timedep": "Time-dependent chemistry",
+  "thermal": "Solves the thermal balance",
+  "lines": "Predicts line intensities",
+  "h2": "Detailed H₂ excitation",
+  "cr": "Cosmic-ray attenuation with depth",
+  "ices": "Grain-surface and ice chemistry"
+ },
+ "sources": {
+  "lepetit06": {
+   "cite": "Le Petit, Le Bourlot, Roueff & Nehmé 2006, ApJS 164, 506 — “A model for atomic and molecular interstellar gas: The Meudon PDR code”",
+   "url": "https://arxiv.org/abs/astro-ph/0602150",
+   "doi": "10.1086/503252"
+  },
+  "meudon_web": {
+   "cite": "Meudon PDR code, official page, ISM Services Platform, Paris Observatory",
+   "url": "https://ism.obspm.fr/pdr.html"
+  },
+  "meudon_dl": {
+   "cite": "Meudon PDR code, download page and release notes (PDR 7.0, 7.1)",
+   "url": "https://ism.obspm.fr/pdr_download.html"
+  },
+  "levrier12": {
+   "cite": "Levrier, Le Petit, Hennebelle, Lesaffre et al. 2012 — “UV-driven chemistry in simulations of the interstellar medium. I. Post-processed chemistry with the Meudon PDR code”",
+   "url": "https://arxiv.org/abs/1205.5689",
+   "doi": "10.1051/0004-6361/201218865"
+  },
+  "bisbas12": {
+   "cite": "Bisbas, Bell, Viti, Yates & Barlow 2012 — “3D-PDR: A new three-dimensional astrochemistry code for treating Photodissociation Regions”",
+   "url": "https://arxiv.org/abs/1209.1091",
+   "doi": "10.1111/j.1365-2966.2012.22077.x"
+  },
+  "itamos_3dpdr": {
+   "cite": "ITAMOS documentation, “The 3D-PDR code”",
+   "url": "https://itamos.readthedocs.io/en/latest/3d-pdr/3dpdr.html"
+  },
+  "itamos_params": {
+   "cite": "ITAMOS documentation, “The params.dat”",
+   "url": "https://itamos.readthedocs.io/en/latest/3d-pdr/params.html"
+  },
+  "itamos_h2": {
+   "cite": "ITAMOS documentation, “H2 Formation Treatment”",
+   "url": "https://itamos.readthedocs.io/en/latest/3d-pdr/h2form.html"
+  },
+  "itamos_heat": {
+   "cite": "ITAMOS documentation, “Heating Processes”",
+   "url": "https://itamos.readthedocs.io/en/latest/3d-pdr/heating.html"
+  },
+  "itamos_home": {
+   "cite": "ITAMOS project documentation, home page",
+   "url": "https://itamos.readthedocs.io/"
+  },
+  "repo_3dpdr": {
+   "cite": "itamos-ism/3D-PDR repository (README and licence metadata) at commit 4488e11 (2026-11-04)",
+   "url": "https://github.com/itamos-ism/3D-PDR/tree/4488e11c016a1d9c2f376a7797365f95b0c2f89d"
+  },
+  "ferland17": {
+   "cite": "Ferland, Chatzikos, Guzmán et al. 2017, RMxAA 53, 385 — “The 2017 Release of Cloudy”",
+   "url": "https://arxiv.org/abs/1705.10877"
+  },
+  "chatzikos23": {
+   "cite": "Chatzikos, Bianchi, Camilloni et al. 2023 — “The 2023 release of Cloudy”",
+   "url": "https://arxiv.org/abs/2308.06396"
+  },
+  "gunasekera25": {
+   "cite": "Gunasekera, van Hoof, Dehghanian et al. 2025 — “The 2025 Release of Cloudy”",
+   "url": "https://arxiv.org/abs/2508.01102"
+  },
+  "cloudy_readme": {
+   "cite": "cloudy/cloudy repository, README.md at commit 9ea1db2 (2026-11-07)",
+   "url": "https://gitlab.nublado.org/cloudy/cloudy/-/blob/9ea1db2fa2e4beefbec49a4ccf5f4f159c399fdb/README.md"
+  },
+  "cloudy_qs": {
+   "cite": "Cloudy Quick Start Guide, docs/latex/QuickStart/QuickStart.tex at commit 9ea1db2",
+   "url": "https://gitlab.nublado.org/cloudy/cloudy/-/blob/9ea1db2fa2e4beefbec49a4ccf5f4f159c399fdb/docs/latex/QuickStart/QuickStart.tex"
+  },
+  "abel05": {
+   "cite": "Abel et al. 2005 — “The H II Region/PDR Connection: Self-Consistent Calculations of Physical Conditions in Star-Forming Regions”",
+   "url": "https://arxiv.org/abs/astro-ph/0506514",
+   "doi": "10.1086/432913"
+  },
+  "shaw05": {
+   "cite": "Shaw et al. 2005 — “Molecular Hydrogen in Star-forming regions: implementation of its micro-physics in Cloudy”",
+   "url": "https://arxiv.org/abs/astro-ph/0501485",
+   "doi": "10.1086/429215"
+  },
+  "abel08": {
+   "cite": "Abel et al. 2008 — “Sensitivity of PDR Calculations to Microphysical Details”",
+   "url": "https://arxiv.org/abs/0808.2532",
+   "doi": "10.1086/591505"
+  },
+  "holdship17": {
+   "cite": "Holdship, Viti, Jiménez-Serra, Makrymallis & Priestley 2017 — “UCLCHEM: A Gas-Grain Chemical Code”",
+   "url": "https://arxiv.org/abs/1705.10677",
+   "doi": "10.3847/1538-3881/aa773f"
+  },
+  "vermarien26": {
+   "cite": "Vermariën, Viti, Dijkhuis et al. 2026 — “UCLCHEM 4.0: An open source gas-grain astrochemistry simulation framework”",
+   "url": "https://arxiv.org/abs/2606.20265"
+  },
+  "uclchem_readme": {
+   "cite": "uclchem/UCLCHEM repository (README and licence metadata) at commit 479df67 (2026-11-05)",
+   "url": "https://github.com/uclchem/UCLCHEM/tree/479df67c5ee03ec165863f21d08452a27b0e6d81"
+  },
+  "rollig07": {
+   "cite": "Röllig et al. 2007 — “A PDR-Code Comparison Study”",
+   "url": "https://arxiv.org/abs/astro-ph/0702231",
+   "doi": "10.1051/0004-6361:20065918"
+  },
+  "cloudy_gitlab": {
+   "cite": "cloudy/cloudy GitLab project page (licence metadata)",
+   "url": "https://gitlab.nublado.org/cloudy/cloudy"
+  }
+ },
+ "codes": [
+  {
+   "id": "meudon",
+   "name": "Meudon PDR",
+   "board": "Meudon PDR",
+   "tagline": "Stationary 1D slab with detailed microphysics, radiative transfer and line excitation.",
+   "links": [
+    [
+     "Official page",
+     "https://ism.obspm.fr/pdr.html"
+    ],
+    [
+     "Download",
+     "https://ism.obspm.fr/pdr_download.html"
+    ],
+    [
+     "Documentation (PDF)",
+     "https://ism.obspm.fr/files/PDRDocumentation/PDRDoc7.pdf"
+    ],
+    [
+     "Reference paper",
+     "https://ui.adsabs.harvard.edu/abs/2006ApJS..164..506L"
+    ]
+   ],
+   "facts": [
+    [
+     "Current version",
+     "PDR 7.1, package updated July 2026",
+     "meudon_dl",
+     "PDR code current public version – updated July 2026"
+    ],
+    [
+     "Chemical network",
+     "225 species including ¹³C, ¹⁸O and D; 8073 reactions (PDR 7.0)",
+     "meudon_dl",
+     "The new chemical network contains 225 species including 13C, 18O and D. There are 8073 reactions."
+    ],
+    [
+     "Requirements",
+     "Fortran 90 with LAPACK",
+     "meudon_dl",
+     "Fortran 90 with lapack and bias libraries"
+    ],
+    [
+     "Outputs",
+     "HDF5, read with the bundled IDAT and Chemistry Analyser tools",
+     "meudon_dl",
+     "The output files of the Meudon PDR code are in HDF5 format and should be read with the dedicated tools: IDAT and Chemistry Analyser"
+    ],
+    [
+     "Licence",
+     "GNU Public Licence (as stated in 2006)",
+     "lepetit06",
+     "presently available on the web under the Gnu Public Licence"
+    ],
+    [
+     "Benchmark",
+     "Listed among the participating codes in the Röllig et al. 2007 PDR code comparison",
+     "rollig07",
+     "Table 2. List of participating codes."
+    ]
+   ],
+   "claims": [
+    {
+     "cap": "pdr",
+     "v": "yes",
+     "t": "Slab of gas and dust lit by the ISRF and/or a star, from one or both sides.",
+     "s": "meudon_web",
+     "q": "The code considers a stationary plane-parallel slab of gas and dust illuminated by a radiation field coming from one or both sides of the cloud. The incident radiation field can be the Interstellar Standard Radiation Field (ISRF) and/or a star."
+    },
+    {
+     "cap": "geom3d",
+     "v": "no",
+     "t": "One-dimensional plane-parallel slab.",
+     "s": "meudon_web",
+     "q": "The code considers a stationary plane-parallel slab of gas and dust"
+    },
+    {
+     "cap": "timedep",
+     "v": "no",
+     "t": "Stationary (steady-state) model.",
+     "s": "meudon_web",
+     "q": "The code considers a stationary plane-parallel slab of gas and dust"
+    },
+    {
+     "cap": "thermal",
+     "v": "yes",
+     "t": "Thermal balance with photoelectric, chemical and cosmic-ray heating and IR/mm line cooling.",
+     "s": "meudon_web",
+     "q": "The model computes the thermal balance taking into account heating processes such as the photoelectric effect on dust, chemistry, cosmic rays, etc. and cooling resulting from infrared and millimeter emission of the abundant species."
+    },
+    {
+     "cap": "lines",
+     "v": "yes",
+     "t": "Line intensities and column densities from computed level excitation.",
+     "s": "meudon_web",
+     "q": "Once abundances of atoms and molecules and level excitation of the most important species have been computed at each position in the cloud, line intensities and column densities can be deduced by a post-processor code."
+    },
+    {
+     "cap": "h2",
+     "v": "yes",
+     "t": "Collision rates for excited ro-vibrational H₂ levels (added in PDR 7.0).",
+     "s": "meudon_dl",
+     "q": "Add collision rates for excited ro-vibrational levels of H2 (Bossion et al. 2018)"
+    },
+    {
+     "cap": "cr",
+     "v": "yes",
+     "t": "Cosmic-ray attenuation with A_V (Padovani et al. 2018), added in 7.0.",
+     "s": "meudon_dl",
+     "q": "Add cosmic ray attenuation with Av following Padovani et al. (2018)"
+    },
+    {
+     "cap": "ices",
+     "v": "partial",
+     "t": "H₂ formation on grains (Langmuir–Hinshelwood, Eley–Rideal) by default; other surface reactions must be added by the user.",
+     "s": "meudon_dl",
+     "q": "The H2 formation by Langmuir-Hinshelwood and Eley-Rideal mechanisms (Le Bourlot et al. 2012) is included in the default chemistry files. Other surface reactions are not provided in the default chemistry files but can be easily introduced."
+    },
+    {
+     "cap": "diffuse",
+     "v": "yes",
+     "t": "Diffuse clouds are a listed use case.",
+     "s": "meudon_web",
+     "q": "The Meudon PDR code can be used to study the physics and chemistry of diffuse clouds, photodissociation regions (PDRs), dark clouds, …"
+    },
+    {
+     "cap": "cores",
+     "v": "yes",
+     "t": "Dark clouds are a listed use case.",
+     "s": "meudon_web",
+     "q": "The Meudon PDR code can be used to study the physics and chemistry of diffuse clouds, photodissociation regions (PDRs), dark clouds, …"
+    },
+    {
+     "cap": "hydro",
+     "v": "partial",
+     "t": "Applied along individual lines of sight through an MHD simulation.",
+     "s": "levrier12",
+     "q": "The Meudon PDR code is then applied to a number of lines of sight through this model, to derive their chemical structures."
+    }
+   ]
+  },
+  {
+   "id": "3dpdr",
+   "name": "3D-PDR",
+   "board": "3D-PDR",
+   "tagline": "PDR chemistry and thermal balance in 1D or arbitrary 3D density fields, with HEALPix ray tracing.",
+   "links": [
+    [
+     "Repository",
+     "https://github.com/itamos-ism/3D-PDR"
+    ],
+    [
+     "Documentation",
+     "https://itamos.readthedocs.io/"
+    ],
+    [
+     "Reference paper",
+     "https://doi.org/10.1111/j.1365-2966.2012.22077.x"
+    ]
+   ],
+   "facts": [
+    [
+     "Current version",
+     "No tagged release; maintained repository itamos-ism/3D-PDR, commit 4488e11 (4 Nov 2026)",
+     "repo_3dpdr",
+     "Code for modelling the chemistry of photodissociation regions in 1D and 3D"
+    ],
+    [
+     "Licence",
+     "GPL-3.0 (repository licence)",
+     "repo_3dpdr",
+     "GPL-3.0"
+    ],
+    [
+     "Requirements",
+     "SUNDIALS, built with cmake",
+     "repo_3dpdr",
+     "You will need to have cmake already installed in your system."
+    ],
+    [
+     "Photoelectric heating",
+     "Bakes & Tielens (1994) with Wolfire et al. modifications",
+     "itamos_heat",
+     "This routine computes the photoelectric heating rate from dust grains and Polycyclic Aromatic Hydrocarbons (PAHs) using the formalism of Bakes & Tielens (1994) with modifications from Wolfire et al. (2003, 2008)."
+    ],
+    [
+     "H₂ formation",
+     "Optional Cazaux & Tielens model (H2FORM = CT02)",
+     "itamos_h2",
+     "This routine is activated when the H2FORM = CT02 flag is specified in the config.mk. The function implements the detailed H₂ formation model developed by Cazaux & Tielens"
+    ],
+    [
+     "Synthetic observations",
+     "RT-synth builds synthetic observations from 3D models",
+     "itamos_home",
+     "RT-synth: Construct synthetic observations from three-dimensional PDR models"
+    ],
+    [
+     "Benchmark",
+     "Reproduces the benchmark results of 1D PDR codes",
+     "bisbas12",
+     "We find that the code is able to reproduce the benchmarking results of various other one-dimensional numerical codes treating PDRs."
+    ]
+   ],
+   "claims": [
+    {
+     "cap": "pdr",
+     "v": "yes",
+     "t": "Chemistry and thermal balance solved together in the cloud.",
+     "s": "bisbas12",
+     "q": "The code solves the chemistry and the thermal balance self-consistently within a given three-dimensional cloud."
+    },
+    {
+     "cap": "thermal",
+     "v": "yes",
+     "t": "Heating and cooling computed at every point using an escape probability method.",
+     "s": "bisbas12",
+     "q": "It calculates the total heating and cooling functions at any point in a given PDR by adopting an escape probability method."
+    },
+    {
+     "cap": "geom3d",
+     "v": "yes",
+     "t": "Arbitrary three-dimensional geometries.",
+     "s": "itamos_3dpdr",
+     "q": "3D-PDR (Bisbas et al. 2012) is a state-of-the-art numerical code designed to model photodissociation regions (PDRs) in arbitrary three-dimensional geometries."
+    },
+    {
+     "cap": "hydro",
+     "v": "yes",
+     "t": "Takes an arbitrary density distribution as input.",
+     "s": "bisbas12",
+     "q": "In this paper we present the three-dimensional code, 3D-PDR, which can treat PDRs of arbitrary density distribution."
+    },
+    {
+     "cap": "lines",
+     "v": "yes",
+     "t": "Propagates FIR/submm line emission out of the cloud.",
+     "s": "bisbas12",
+     "q": "It uses a HEALPix-based ray-tracing scheme to evaluate the attenuation of the far-ultraviolet radiation in the PDR and the propagation of the far-infrared/submm line emission out of the PDR."
+    },
+    {
+     "cap": "timedep",
+     "v": "partial",
+     "t": "Chemistry is integrated to a chosen end time; the default (10 Myr) is set to reach equilibrium.",
+     "s": "itamos_params",
+     "q": "Entry 10: Chemical evolution end time (years). Default 10 Myr ensures chemical equilibrium; adjustable for younger cloud studies."
+    },
+    {
+     "cap": "cr",
+     "v": "yes",
+     "t": "Optional softened-power-law cosmic-ray attenuation.",
+     "s": "itamos_params",
+     "q": "For softened-power-law cosmic ray attenuation, modify the parameter structure as follows:"
+    },
+    {
+     "cap": "xray",
+     "v": "no",
+     "t": "An X-ray flux input exists, but the manual advises against changing it in this version.",
+     "s": "itamos_params",
+     "q": "Entry 7: X-ray flux (erg/cm2/s). Not recommended to change in this version."
+    },
+    {
+     "cap": "diffuse",
+     "v": "yes",
+     "t": "Used to study diffuse clouds (listed application).",
+     "s": "itamos_3dpdr",
+     "q": "Reevaluation of the Cosmic-Ray Ionization Rate in Diffuse Clouds (Obolentseva et al., 2024)"
+    },
+    {
+     "cap": "ices",
+     "v": "partial",
+     "t": "Outputs separate gas and ice abundances; depth of surface chemistry depends on the network.",
+     "s": "repo_3dpdr",
+     "q": "the total abundance of each element (H, He, C, N, O, S, Mg, …) relative to hydrogen, obtained by summing all species that contain it, split into gas and ice, with the main carriers."
+    }
+   ]
+  },
+  {
+   "id": "cloudy",
+   "name": "Cloudy",
+   "board": "Cloudy",
+   "tagline": "1D spectral synthesis from ionized gas through the PDR into molecular gas, with X-ray physics.",
+   "links": [
+    [
+     "Official site",
+     "https://www.nublado.org"
+    ],
+    [
+     "Repository",
+     "https://gitlab.nublado.org/cloudy/cloudy"
+    ],
+    [
+     "Build instructions",
+     "https://gitlab.nublado.org/cloudy/cloudy/-/wikis/CompileCode"
+    ],
+    [
+     "Release paper (cite this)",
+     "https://ui.adsabs.harvard.edu/abs/2025arXiv250801102G"
+    ]
+   ],
+   "facts": [
+    [
+     "Current version",
+     "C25, released 2025",
+     "cloudy_readme",
+     "The current version of Cloudy is C25, released in 2025."
+    ],
+    [
+     "Licence",
+     "zlib (repository licence)",
+     "cloudy_gitlab",
+     "zlib License"
+    ],
+    [
+     "Chemical network",
+     "Reaction rates updated to recent UDfA and KIDA values (2023 release)",
+     "chatzikos23",
+     "several chemical reaction rates to their most recent UDfA and KiDA values"
+    ],
+    [
+     "Network extension (2025)",
+     "Silicon, titanium and phosphorus chemistry added",
+     "gunasekera25",
+     "We have also extended the molecular network by adding new silicon-bearing species, titanium-related reactions, and phosphorus-containing molecules"
+    ],
+    [
+     "Grains",
+     "Grain physics with optional PAHs (grains PAH command)",
+     "cloudy_qs",
+     "grains PAH includes PAHs."
+    ],
+    [
+     "Benchmark",
+     "Listed among the participating codes in the Röllig et al. 2007 PDR code comparison",
+     "rollig07",
+     "Table 2. List of participating codes."
+    ]
+   ],
+   "claims": [
+    {
+     "cap": "hii",
+     "v": "yes",
+     "t": "H II region and PDR computed together, in pressure equilibrium.",
+     "s": "abel05",
+     "q": "We self-consistently calculate the thermal and chemical structure of an H II region and photodissociation region (PDR) that are in pressure equilibrium."
+    },
+    {
+     "cap": "pdr",
+     "v": "yes",
+     "t": "Includes a wide set of PDR processes.",
+     "s": "abel08",
+     "q": "Our calculations use the Cloudy spectral synthesis code, recently modified to include a wealth of PDR physical processes."
+    },
+    {
+     "cap": "thermal",
+     "v": "yes",
+     "t": "Solves the ionization, thermal and chemical state of the cloud.",
+     "s": "cloudy_qs",
+     "q": "The code computes the non-equilibrium ionization, thermal, and chemical state of a cloud that may (or may not) be exposed to an external source of radiation."
+    },
+    {
+     "cap": "lines",
+     "v": "yes",
+     "t": "Full spectral synthesis with very large line lists.",
+     "s": "ferland17",
+     "q": "we can now predict well over an order of magnitude more emission lines when all databases are fully used."
+    },
+    {
+     "cap": "h2",
+     "v": "yes",
+     "t": "Detailed micro-physical model of H₂.",
+     "s": "shaw05",
+     "q": "Using this micro-physical model of H2, illustrative calculations of prototypical astrophysical environments are presented."
+    },
+    {
+     "cap": "xray",
+     "v": "yes",
+     "t": "Lyα resolved into j-resolved doublets so Cloudy serves X-ray work (2025 release).",
+     "s": "gunasekera25",
+     "q": "A major part of this development involves resolving the Lyman α line into j-resolved fine-structure doublets, making Cloudy of use to the X-ray community."
+    },
+    {
+     "cap": "geom3d",
+     "v": "no",
+     "t": "One-dimensional; 2D and 3D geometries are listed as planned development.",
+     "s": "cloudy_qs",
+     "q": "ALI line radiative transfer and expansion to two and three dimensional geometries are some of the planned future development."
+    },
+    {
+     "cap": "timedep",
+     "v": "partial",
+     "t": "Mostly static; time-dependent and dynamical runs exist but are described as not fully mature.",
+     "s": "cloudy_qs",
+     "q": "Most calculations assume that the cloud is static. The ability to do dynamical and time-dependent calculations is now in the code although this part is not fully mature."
+    }
+   ]
+  },
+  {
+   "id": "uclchem",
+   "name": "UCLCHEM",
+   "board": null,
+   "tagline": "Time-dependent gas–grain chemistry with three-phase ices, for collapse, cores and shocks.",
+   "links": [
+    [
+     "Repository",
+     "https://github.com/uclchem/UCLCHEM"
+    ],
+    [
+     "Documentation",
+     "https://uclchem.github.io"
+    ],
+    [
+     "Release paper (cite this)",
+     "https://ui.adsabs.harvard.edu/abs/2026arXiv260620265V/abstract"
+    ]
+   ],
+   "facts": [
+    [
+     "Current version",
+     "UCLCHEM 4.0 (2026 release paper)",
+     "vermarien26",
+     "UCLCHEM 4.0: An open source gas-grain astrochemistry simulation framework"
+    ],
+    [
+     "Licence",
+     "MIT (repository licence)",
+     "uclchem_readme",
+     "MIT License"
+    ],
+    [
+     "Requirements",
+     "gfortran, make, Python 3.11+; installed from source as a Python module",
+     "uclchem_readme",
+     "To build UCLCHEM, you'll need gfortran, make and python 3.11+."
+    ],
+    [
+     "Chemical network",
+     "User-defined, built with the MakeRates utility",
+     "uclchem_readme",
+     "a utility script MakeRates to help the user produce a chemical network from simple lists of reactions and species."
+    ]
+   ],
+   "claims": [
+    {
+     "cap": "timedep",
+     "v": "yes",
+     "t": "Solves gas–grain networks as a function of time.",
+     "s": "vermarien26",
+     "q": "The framework consists of a core routine that solves gas-grain chemical reaction networks as a function of time"
+    },
+    {
+     "cap": "ices",
+     "v": "yes",
+     "t": "Three phases: gas, ice surface and bulk ice.",
+     "s": "vermarien26",
+     "q": "The chemistry is solved with a rate-equation formalism, and includes a three phase description, namely gas phase, ice surface and bulk ice."
+    },
+    {
+     "cap": "thermal",
+     "v": "no",
+     "t": "Density and temperature are inputs (user-defined or parametrized), not solved from heating and cooling.",
+     "s": "vermarien26",
+     "q": "self-consistently coupled to either a user-defined or parametrized physical evolution of density, temperature and other physical input parameters."
+    },
+    {
+     "cap": "cores",
+     "v": "yes",
+     "t": "Collapse of a Bonnor–Ebert sphere reproduces observed core molecules.",
+     "s": "holdship17",
+     "q": "We find the collapse of a simple Bonnor-Ebert sphere successfully reproduces most of the behaviour of CO,CS and NH3 from cores observed by Tafalla2004"
+    },
+    {
+     "cap": "shocks",
+     "v": "yes",
+     "t": "Parametrized shock models.",
+     "s": "vermarien26",
+     "q": "The framework includes parametrizations for astrochemical modelling of cloud collapses, protostellar cores and shocks"
+    },
+    {
+     "cap": "hydro",
+     "v": "yes",
+     "t": "Post-processes hydrodynamical simulations.",
+     "s": "vermarien26",
+     "q": "This allows both the post-processing of hydrodynamical simulations and the usage of physical parametrizations"
+    },
+    {
+     "cap": "disk",
+     "v": "partial",
+     "t": "Applications range up to protoplanetary disk scales.",
+     "s": "vermarien26",
+     "q": "ranging in context from extra-galactic to protoplanetary disk scales."
+    },
+    {
+     "cap": "geom3d",
+     "v": "no",
+     "t": "Computes the chemistry of a single parcel of gas and dust.",
+     "s": "vermarien26",
+     "q": "UCLCHEM is a comprehensive gas-grain astrochemical modelling framework that can compute the chemical evolution inside a parcel of gas and dust under a specified, time-dependent physical description."
+    }
+   ]
+  }
+ ],
+ "questions": [
+  {
+   "id": "obj",
+   "type": "radio",
+   "q": "What are you modelling?",
+   "hint": "Pick the closest match.",
+   "opts": [
+    [
+     "pdr",
+     "A UV-lit cloud surface or PDR",
+     [
+      "pdr",
+      "thermal"
+     ]
+    ],
+    [
+     "diffuse",
+     "A diffuse or translucent cloud",
+     [
+      "diffuse"
+     ]
+    ],
+    [
+     "core",
+     "A dark cloud or dense core",
+     [
+      "cores"
+     ]
+    ],
+    [
+     "hii",
+     "An H II region together with its PDR",
+     [
+      "hii"
+     ]
+    ],
+    [
+     "xray",
+     "Gas lit by X-rays",
+     [
+      "xray"
+     ]
+    ],
+    [
+     "shock",
+     "Shocked gas or outflows",
+     [
+      "shocks"
+     ]
+    ],
+    [
+     "disk",
+     "A protoplanetary disk",
+     [
+      "disk"
+     ]
+    ],
+    [
+     "sim",
+     "A simulated cloud or galaxy",
+     [
+      "hydro"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "geo",
+   "type": "radio",
+   "q": "Can a 1D slab represent its structure?",
+   "hint": "Clumpy or irregular gas lit from many directions needs 3D.",
+   "opts": [
+    [
+     "1d",
+     "Yes, 1D is enough",
+     []
+    ],
+    [
+     "3d",
+     "No, I need 3D",
+     [
+      "geom3d"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "time",
+   "type": "radio",
+   "q": "Does chemical age matter?",
+   "hint": "Choose evolution if you want abundances at a given time, before equilibrium.",
+   "opts": [
+    [
+     "steady",
+     "Steady state is fine",
+     []
+    ],
+    [
+     "evolve",
+     "I need the time evolution",
+     [
+      "timedep"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "obs",
+   "type": "radio",
+   "q": "What will you compare with?",
+   "opts": [
+    [
+     "lines",
+     "Line intensities",
+     [
+      "lines",
+      "thermal"
+     ]
+    ],
+    [
+     "cols",
+     "Column densities or abundances",
+     []
+    ],
+    [
+     "ices",
+     "Ice abundances",
+     [
+      "ices"
+     ]
+    ],
+    [
+     "spec",
+     "A spectrum including ionized-gas lines",
+     [
+      "lines",
+      "hii"
+     ]
+    ]
+   ]
+  },
+  {
+   "id": "temp",
+   "type": "radio",
+   "q": "Gas temperature",
+   "opts": [
+    [
+     "solve",
+     "The code should compute it",
+     [
+      "thermal"
+     ]
+    ],
+    [
+     "given",
+     "I will prescribe it",
+     []
+    ]
+   ]
+  },
+  {
+   "id": "extra",
+   "type": "checkbox",
+   "q": "Anything else you need?",
+   "hint": "Optional.",
+   "opts": [
+    [
+     "h2",
+     "H₂ ro-vibrational lines",
+     [
+      "h2"
+     ]
+    ],
+    [
+     "cr",
+     "Cosmic rays attenuated with depth",
+     [
+      "cr"
+     ]
+    ],
+    [
+     "ices",
+     "Surface chemistry beyond H₂ formation",
+     [
+      "ices"
+     ]
+    ]
+   ]
+  }
+ ]
+}
+</script>
+
 <script>
 (function(){
 const $=s=>document.querySelector(s); const el=(t,c,txt)=>{const e=document.createElement(t); if(c) e.className=c; if(txt!=null) e.textContent=txt; return e;};
 const DBS=['UDfA12','UDfA22','KIDA 2014','KIDA 2024','OSU','Cloudy','NL97','NL99','Meudon PDR','UCL_PDR','3D-PDR','own network'];
 const TYPE={missing:['missing','--missing'],wrong:['wrong','--wrong'],recheck:['recheck','--recheck'],update:['update','--update']};
 const STAT={open:['open','--open'],review:['under review','--review'],confirmed:['confirmed','--confirmed'],resolved:['resolved','--resolved'],disputed:['disputed','--disputed']};
-const VIEWS=['reports','submit','discussion','groups','about'];
+const VIEWS=['reports','submit','discussion','groups','advisor','codes','about'];
 let db=null,user=null,uid=null,canWrite=null,reports=[],posts=[],groups=[],myVotes={},open={},cmtUnsub={};
 const toast=m=>{const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2600);};
 const fmtDate=s=>{try{return new Date(s).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});}catch(e){return '';}};
@@ -342,6 +1244,79 @@ function renderGroups(){ const box=$('#groups'); box.replaceChildren(); if(!grou
 $('#gform').addEventListener('submit',async e=>{e.preventDefault(); if(!db) return; const doc={name:$('#g-name').value.trim(),code:$('#g-code').value.trim(),net:$('#g-net').value.trim(),contact:$('#g-contact').value.trim(),by:uid,created:new Date().toISOString()};
   $('#g-note').textContent='saving…'; try{ await db.collection('groups').add(doc); $('#gform').reset(); $('#g-note').textContent=''; toast('Group added'); }catch(err){ $('#g-note').textContent=err&&err.code==='invalid_argument'?'You cannot write to this board.':'Could not save.'; } });
 
+// ---------- advisor + codes (data: #pdr-kb)
+/* advisor-core:start  (pure; extracted and run by advisor.test.mjs) */
+const WEIGHT={yes:2,partial:1,no:-4}; // "not documented" scores 0: silence in the sources is not a "no"
+function needsFrom(kb,answers){const out=[];
+  kb.questions.forEach(q=>(answers[q.id]||[]).forEach(id=>{const o=q.opts.find(o=>o[0]===id); if(o) o[2].forEach(k=>{if(!out.includes(k)) out.push(k);});}));
+  return out;}
+function scoreCodes(kb,need){
+  return kb.codes.map(c=>{const by={}; c.claims.forEach(x=>{by[x.cap]=x;});
+    const rows=need.map(k=>({cap:k,claim:by[k]||null,v:by[k]?by[k].v:'none'}));
+    return {code:c,rows,score:rows.reduce((s,r)=>s+(WEIGHT[r.v]||0),0),nos:rows.filter(r=>r.v==='no').length};
+  }).sort((a,b)=>b.score-a.score||a.nos-b.nos||a.code.name.localeCompare(b.code.name));}
+/* advisor-core:end */
+let KB=null; try{KB=JSON.parse($('#pdr-kb').textContent);}catch(e){}
+const MK={yes:['●','yes'],partial:['◐','partly'],no:['○','no'],none:['–','not documented']};
+function mark(v,withWord){const w=el('span'); const s=el('span','mk '+v,MK[v][0]); s.setAttribute('aria-hidden','true'); w.append(s);
+  w.append(el('span',withWord?'':'sr',(withWord?' ':'')+MK[v][1]+(withWord?'':': '))); return w;}
+function link(href,txt){const a=el('a','',txt); a.href=href; a.target='_blank'; a.rel='noopener'; return a;}
+function evidence(sid,q){const S=KB.sources[sid]; const d=el('details','ev');
+  d.append(el('summary','','Source: '+S.cite.split(' — ')[0]));
+  d.append(el('blockquote','','“'+q+'”'));
+  const p=el('div','src'); p.append(document.createTextNode(S.cite+'. '),link(S.url,'Open source'));
+  if(S.doi){p.append(document.createTextNode(' · ')); p.append(link('https://doi.org/'+S.doi,'doi:'+S.doi));}
+  d.append(p); return d;}
+function advAnswers(){const a={}; KB.questions.forEach(q=>{a[q.id]=[...document.querySelectorAll('#adv-form input[name="'+q.id+'"]:checked')].map(i=>i.value);}); return a;}
+function buildAdvisor(){const f=$('#adv-form'); let saved={}; try{saved=JSON.parse(localStorage.getItem('prb.adv')||'{}');}catch(e){}
+  KB.questions.forEach(q=>{const fs=el('fieldset'); fs.append(el('legend','',q.q)); if(q.hint) fs.append(el('p','hint',q.hint));
+    const box=el('div','opts'); q.opts.forEach(o=>{const l=el('label','opt'); const i=el('input'); i.type=q.type; i.name=q.id; i.value=o[0]; i.checked=(saved[q.id]||[]).includes(o[0]); l.append(i,el('span','',o[1])); box.append(l);});
+    fs.append(box); f.append(fs);});
+  const act=el('div','actions'); const rs=el('button','small','Clear answers'); rs.type='reset';
+  const jp=el('button','small jump','Jump to ranking'); jp.type='button'; jp.addEventListener('click',()=>{const o=$('#adv-out'); o.scrollIntoView(); o.focus({preventScroll:true});});
+  jp.style.marginBottom='14px'; f.before(jp); act.append(rs); f.append(act);
+  f.addEventListener('change',renderAdvice); f.addEventListener('reset',()=>setTimeout(renderAdvice));}
+function renderAdvice(){ if(!KB) return; const a=advAnswers(); try{localStorage.setItem('prb.adv',JSON.stringify(a));}catch(e){}
+  const out=$('#adv-out'); out.replaceChildren(el('h2','','Ranking')); const need=needsFrom(KB,a);
+  const st=$('#adv-status');
+  if(!need.length){st.textContent=''; out.append(el('div','empty','Answer any question to rank the four codes against what their papers and documentation state.')); return;}
+  out.append(el('p','note','Your answers ask for: '+need.map(k=>KB.caps[k]).join('; ')+'.'));
+  const ranked=scoreCodes(KB,need), top=ranked[0].score, tie=ranked.filter(r=>r.score===top).length>1, ol=el('ol','rank');
+  const best=ranked.filter(r=>r.score===top);
+  st.textContent=(tie?'Tied best fit: ':'Best fit: ')+best.map(r=>r.code.name).join(' and ')+', '+best[0].rows.filter(x=>x.v==='yes').length+' of '+need.length+' requirements met.';
+  ranked.forEach(r=>{const li=el('li','rk'+(r.score===top?' top':'')); const h=el('div','rk-h'); h.append(el('b','',r.code.name));
+    if(r.score===top) h.append(el('span','tag',tie?'tied best fit':'best fit'));
+    h.append(el('span','score',r.rows.filter(x=>x.v==='yes').length+' of '+r.rows.length+' met')); li.append(h,el('div','tagline',r.code.tagline));
+    const gaps=r.rows.filter(x=>x.v!=='yes'); const gp=el('p','gaps');
+    if(gaps.length) gp.append(el('b','','Not fully met: '),document.createTextNode(gaps.map(x=>KB.caps[x.cap]+' ('+MK[x.v][1]+')').join('; ')+'.'));
+    else gp.textContent='Meets every requirement from your answers.';
+    li.append(gp);
+    [['yes','Met'],['partial','Partly met'],['no','Not met'],['none','Not documented in our sources']].forEach(([v,label])=>{const rows=r.rows.filter(x=>x.v===v); if(!rows.length) return;
+      li.append(el('h3','grp-h',label+' ('+rows.length+')')); const ul=el('ul','why');
+      rows.forEach(x=>{const row=el('li'); const m=el('span','mk '+x.v,MK[x.v][0]); m.setAttribute('aria-hidden','true'); const b=el('div');
+        const line=el('div'); const lab=el('span','',KB.caps[x.cap]+'. '); lab.style.fontWeight='500'; line.append(lab,document.createTextNode(x.claim?x.claim.t:'No statement in the sources gathered; check the official documentation.'));
+        b.append(line); if(x.claim) b.append(evidence(x.claim.s,x.claim.q)); row.append(m,b); ul.append(row);});
+      li.append(ul);});
+    if(r.code.board&&reports.length){const n=reports.filter(p=>p.status!=='resolved'&&(p.dbs||[]).includes(r.code.board)).length; if(n) li.append(el('p','note',n+' open rate report'+(n===1?'':'s')+' on this board concern '+r.code.board+'.'));}
+    ol.append(li);});
+  out.append(ol,el('p','note','Scoring per requirement: yes 2, partly 1, not documented 0, no −4 (only where a source says so).'));}
+function renderCodes(){ if(!KB) return; const caps=Object.keys(KB.caps);
+  const lg=$('#mx-legend'); ['yes','partial','no','none'].forEach(v=>lg.append(mark(v,true)));
+  const t=$('#mx'); const th=el('thead'); const hr=el('tr'); hr.append(el('th','','Capability')); KB.codes.forEach(c=>{const x=el('th','',c.name); x.scope='col'; hr.append(x);}); th.append(hr); t.append(th);
+  const tb=el('tbody'); caps.forEach(k=>{const tr=el('tr'); const h=el('th','',KB.caps[k]); h.scope='row'; tr.append(h);
+    KB.codes.forEach(c=>{const cl=c.claims.find(x=>x.cap===k); const td=el('td'); td.append(mark(cl?cl.v:'none',true)); if(cl) td.title=cl.t; tr.append(td);}); tb.append(tr);}); t.append(tb);
+  const box=$('#code-list'); KB.codes.forEach(c=>{const s=el('section','code'); s.setAttribute('aria-labelledby','code-'+c.id); const h=el('h2','',c.name); h.id='code-'+c.id; s.append(h,el('p','lead',c.tagline));
+    const ln=el('div','links'); c.links.forEach(([txt,href])=>ln.append(link(href,txt))); s.append(ln);
+    const dl=el('dl','kv'); c.facts.forEach(([k,v,sid,q])=>{dl.append(el('dt','',k)); const dd=el('dd'); dd.append(el('div','',v),evidence(sid,q)); dl.append(dd);}); s.append(dl);
+    s.append(el('h3','','What its sources state'));
+    const ul=el('ul','caps'); caps.forEach(k=>{const cl=c.claims.find(x=>x.cap===k); if(!cl) return; const li=el('li'); const m=el('span','mk '+cl.v,MK[cl.v][0]); m.setAttribute('aria-hidden','true'); const b=el('div');
+      const line=el('div'); line.append(el('span','sr',MK[cl.v][1]+': '),el('span','lbl',KB.caps[k]+'. '),document.createTextNode(cl.t)); b.append(line,evidence(cl.s,cl.q)); li.append(m,b); ul.append(li);}); s.append(ul);
+    const miss=caps.filter(k=>!c.claims.some(x=>x.cap===k)); if(miss.length) s.append(el('p','note','Not documented in our sources: '+miss.map(k=>KB.caps[k]).join('; ')+'.'));
+    box.append(s);});
+  const sl=$('#src-list'); Object.values(KB.sources).forEach(S=>{const li=el('li'); li.append(document.createTextNode(S.cite+'. '),link(S.url,S.url.replace(/^https?:\/\//,''))); if(S.doi) li.append(document.createTextNode(' · doi:'+S.doi)); sl.append(li);});}
+if(KB){buildAdvisor(); renderAdvice(); renderCodes();}
+else{$('#adv-out').append(el('div','empty','The code knowledge base could not be read.'));}
+
 // ---------- boot
 renderReports(); renderPosts(); renderGroups();
 (async()=>{
@@ -351,7 +1326,7 @@ renderReports(); renderPosts(); renderGroups();
   db=await (window.claude&&claude.use?claude.use('db'):Promise.resolve(null));
   if(!db){ $('#reports').replaceChildren(el('div','empty','The shared store is not available in this view. Open the page signed in on claude.ai to see and add reports.')); return; }
   let timer=setTimeout(()=>toast('Still waiting for the store…'),10000);
-  db.collection('reports').orderBy('created','desc').limit(500).onSnapshot(s=>{ if(!s.metadata.fromCache){clearTimeout(timer);} reports=s.docs.map(d=>({id:d.id,...d.data()})); renderReports(); },e=>{clearTimeout(timer); $('#reports').replaceChildren(el('div','empty','Reports cannot be loaded: '+e.code));});
+  db.collection('reports').orderBy('created','desc').limit(500).onSnapshot(s=>{ if(!s.metadata.fromCache){clearTimeout(timer);} reports=s.docs.map(d=>({id:d.id,...d.data()})); renderReports(); renderAdvice(); },e=>{clearTimeout(timer); $('#reports').replaceChildren(el('div','empty','Reports cannot be loaded: '+e.code));});
   db.collection('posts').orderBy('created','desc').limit(300).onSnapshot(s=>{ posts=s.docs.map(d=>({id:d.id,...d.data()})); renderPosts(); },()=>{});
   db.collection('groups').limit(300).onSnapshot(s=>{ groups=s.docs.map(d=>({id:d.id,...d.data()})); renderGroups(); },()=>{});
   if(uid) db.doc('votes/'+uid).onSnapshot(s=>{ myVotes=(s.exists&&s.data().ids)||{}; renderReports(); },()=>{});
