@@ -128,6 +128,7 @@ button[disabled]{opacity:.5;cursor:default}
 .ev summary{cursor:pointer;font-size:12.5px;color:var(--accent);width:fit-content;padding:2px 0}
 .ev blockquote{margin:6px 0 4px;padding:8px 12px;border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 6px 6px 0;font-size:13.5px;text-wrap:pretty}
 .ev .src{font-size:12.5px;color:var(--fg-2)}
+.ev blockquote.code{font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;overflow-x:auto}
 .mx{border-collapse:separate;border-spacing:0;font-size:14px;min-width:720px;width:100%;table-layout:fixed}
 .mx thead th:first-child{width:28%}
 .mx th,.mx td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
@@ -264,10 +265,13 @@ button[disabled]{opacity:.5;cursor:default}
 <!-- ================= CODES ================= -->
 <section id="v-codes" hidden>
   <h1>The codes, side by side</h1>
-  <p class="lead">What each code assumes and what it can do, as stated by its own papers and documentation. Open any claim to read the passage it rests on. Gaps mean our sources are silent, not that the code cannot do it: check the official documentation linked under each code.</p>
+  <p class="lead">What each code assumes and what it can do, as stated by its own papers and documentation and, where the source is public, by the code itself at a pinned version. Open any claim to read the passage it rests on. Gaps mean our sources are silent, not that the code cannot do it: check the official documentation linked under each code.</p>
   <div class="legend" id="mx-legend"></div>
   <div class="wide"><table class="mx" id="mx"></table></div>
   <div id="code-list"></div>
+  <h2 id="tbd">Codes still to add</h2>
+  <p class="note">The other participants in the Röllig et al. (2007) PDR code comparison (Table 2). They are not on the board yet: no claims, no advisor ranking.</p>
+  <ul id="tbd-list"></ul>
   <h2 id="sources">Sources</h2>
   <p class="note">Retrieved 16 November 2026 from the arXiv API, the official websites and the repositories at the commits given.</p>
   <ol class="srcs" id="src-list"></ol>
@@ -305,7 +309,10 @@ button[disabled]{opacity:.5;cursor:default}
 
 <!-- Knowledge base for the advisor and the Codes tab. Rule: every claim carries a source id and the
      verbatim passage it rests on. A capability with no sourced statement is simply absent ("not documented").
-     v: yes | partial | no. Retrieved 2026-11-16. -->
+     v: yes | partial | no. Retrieved 2026-11-16. A claim may also carry code: {s, q}, a second piece of
+     evidence quoted from the code itself at a pinned commit (sources with kind "code").
+     Every source describes one version of a code. When a paper and a newer commit differ, record both
+     with their version; never call the older one wrong. -->
 <script type="application/json" id="pdr-kb">
 {
  "caps": {
@@ -429,6 +436,106 @@ button[disabled]{opacity:.5;cursor:default}
   "cloudy_gitlab": {
    "cite": "cloudy/cloudy GitLab project page (licence metadata)",
    "url": "https://gitlab.nublado.org/cloudy/cloudy"
+  },
+  "code3d_xray": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/calc_reac_rates.F90 lines 517–520 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/calc_reac_rates.F90#L517-L520",
+   "kind": "code"
+  },
+  "code3d_freeze": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/calc_reac_rates.F90 lines 219–223 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/calc_reac_rates.F90#L219-L223",
+   "kind": "code"
+  },
+  "code3d_cr": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/config.mk lines 42–43 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/config.mk#L42-L43",
+   "kind": "code"
+  },
+  "code3d_steady": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/config.mk lines 50–56 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/config.mk#L50-L56",
+   "kind": "code"
+  },
+  "code3d_cool": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), params.dat lines 50–53 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/params.dat#L50-L53",
+   "kind": "code"
+  },
+  "code3d_h2sh": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/shield.F90 lines 51–51 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/shield.F90#L51-L51",
+   "kind": "code"
+  },
+  "code3d_cosh": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/shield.F90 lines 104–104 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/shield.F90#L104-L104",
+   "kind": "code"
+  },
+  "code3d_h2form": {
+   "cite": "3D-PDR code at commit 4488e11 (2026-11-04), src/config.mk lines 134–134 — itamos-ism/3D-PDR repository",
+   "url": "https://github.com/itamos-ism/3D-PDR/blob/4488e11c016a1d9c2f376a7797365f95b0c2f89d/src/config.mk#L134-L134",
+   "kind": "code"
+  },
+  "codeme_geom": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), data/pdr.in lines 3–3 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codeme_eos": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), data/pdr.in lines 5–5 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codeme_therm": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), data/pdr.in lines 6–6 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codeme_cr": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), data/pdr.in lines 23–24 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codeme_ice": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), data/Chemistry/ch240706_iso_Mathis.chi lines 272–279 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codeme_h2": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), src/PXDR_20_EXCITH2.f90 lines 25–28 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codeme_xray": {
+   "cite": "Meudon PDR 7.1 source (package PDR71_260706, 2026-07-06), src/PXDR_23_BILTHERM.f90 lines 1855–1855 — ism.obspm.fr download, sha256 617a82e1c271940f…",
+   "url": "https://ism.obspm.fr/files/PDRSourceCode/PDR71_260706.tgz",
+   "kind": "code"
+  },
+  "codecl_ice": {
+   "cite": "Cloudy code at commit 9ea1db2 (2026-11-07), source/mole_species.cpp lines 179–181 — cloudy/cloudy repository",
+   "url": "https://gitlab.nublado.org/cloudy/cloudy/-/blob/9ea1db2fa2e4beefbec49a4ccf5f4f159c399fdb/source/mole_species.cpp#L179-181",
+   "kind": "code"
+  },
+  "codecl_cr": {
+   "cite": "Cloudy code at commit 9ea1db2 (2026-11-07), source/highen.cpp lines 143–143 — cloudy/cloudy repository",
+   "url": "https://gitlab.nublado.org/cloudy/cloudy/-/blob/9ea1db2fa2e4beefbec49a4ccf5f4f159c399fdb/source/highen.cpp#L143-143",
+   "kind": "code"
+  },
+  "codeuc_heat": {
+   "cite": "UCLCHEM code at commit 479df67 (2026-11-05), src/fortran_src/defaultparameters.f90 lines 72–72 — uclchem/UCLCHEM repository",
+   "url": "https://github.com/uclchem/UCLCHEM/blob/479df67c5ee03ec165863f21d08452a27b0e6d81/src/fortran_src/defaultparameters.f90#L72-L72",
+   "kind": "code"
+  },
+  "codeuc_cr": {
+   "cite": "UCLCHEM code at commit 479df67 (2026-11-05), src/fortran_src/defaultparameters.f90 lines 56–56 — uclchem/UCLCHEM repository",
+   "url": "https://github.com/uclchem/UCLCHEM/blob/479df67c5ee03ec165863f21d08452a27b0e6d81/src/fortran_src/defaultparameters.f90#L56-L56",
+   "kind": "code"
+  },
+  "codeuc_uv": {
+   "cite": "UCLCHEM code at commit 479df67 (2026-11-05), src/fortran_src/chemistry.f90 lines 332–332 — uclchem/UCLCHEM repository",
+   "url": "https://github.com/uclchem/UCLCHEM/blob/479df67c5ee03ec165863f21d08452a27b0e6d81/src/fortran_src/chemistry.f90#L332-L332",
+   "kind": "code"
   }
  },
  "codes": [
@@ -506,7 +613,11 @@ button[disabled]{opacity:.5;cursor:default}
      "v": "no",
      "t": "One-dimensional plane-parallel slab.",
      "s": "meudon_web",
-     "q": "The code considers a stationary plane-parallel slab of gas and dust"
+     "q": "The code considers a stationary plane-parallel slab of gas and dust",
+     "code": {
+      "s": "codeme_geom",
+      "q": "1.00e+00                                        ! AVmax             : Total slab depth in visual extinction (AV)"
+     }
     },
     {
      "cap": "timedep",
@@ -520,7 +631,11 @@ button[disabled]{opacity:.5;cursor:default}
      "v": "yes",
      "t": "Thermal balance with photoelectric, chemical and cosmic-ray heating and IR/mm line cooling.",
      "s": "meudon_web",
-     "q": "The model computes the thermal balance taking into account heating processes such as the photoelectric effect on dust, chemistry, cosmic rays, etc. and cooling resulting from infrared and millimeter emission of the abundant species."
+     "q": "The model computes the thermal balance taking into account heating processes such as the photoelectric effect on dust, chemistry, cosmic rays, etc. and cooling resulting from infrared and millimeter emission of the abundant species.",
+     "code": {
+      "s": "codeme_therm",
+      "q": "1                                               ! f_ThermBalance    : Thermal Balance (0 : fix the gaz temperature, 1 : compute gas temperature)"
+     }
     },
     {
      "cap": "lines",
@@ -534,21 +649,33 @@ button[disabled]{opacity:.5;cursor:default}
      "v": "yes",
      "t": "Collision rates for excited ro-vibrational H₂ levels (added in PDR 7.0).",
      "s": "meudon_dl",
-     "q": "Add collision rates for excited ro-vibrational levels of H2 (Bossion et al. 2018)"
+     "q": "Add collision rates for excited ro-vibrational levels of H2 (Bossion et al. 2018)",
+     "code": {
+      "s": "codeme_h2",
+      "q": "! H2 population at formation\nREAL (KIND=dp), DIMENSION (:), ALLOCATABLE :: pophm1        ! Prob to form H2(v,J) on grain (physisorption)\nREAL (KIND=dp), DIMENSION (:), ALLOCATABLE :: pophm2        ! Prob to form H2(v,J) on grain (Eley-Rideal)\nREAL (KIND=dp), DIMENSION (:), ALLOCATABLE :: pophm_ch      ! Prob to form H2(v,J) On excited level by chemistry"
+     }
     },
     {
      "cap": "cr",
      "v": "yes",
-     "t": "Cosmic-ray attenuation with A_V (Padovani et al. 2018), added in 7.0.",
+     "t": "Cosmic-ray attenuation with A_V (Padovani et al. 2018), added in 7.0; off by default (f_CR_attenu = 0).",
      "s": "meudon_dl",
-     "q": "Add cosmic ray attenuation with Av following Padovani et al. (2018)"
+     "q": "Add cosmic ray attenuation with Av following Padovani et al. (2018)",
+     "code": {
+      "s": "codeme_cr",
+      "q": "5.00e-17                                        ! zeta              : Cosmic rays ionization rate in H2 ionization s-1 (Example : zeta = 5E-17)\n0                                               ! f_CR_attenu       : Cosmic rays flux attenuation (0: without attenuation, 1: attenuation following Padovani et al. 2018)"
+     }
     },
     {
      "cap": "ices",
      "v": "partial",
-     "t": "H₂ formation on grains (Langmuir–Hinshelwood, Eley–Rideal) by default; other surface reactions must be added by the user.",
+     "t": "H₂ formation on grains (Langmuir–Hinshelwood, Eley–Rideal) by default; the shipped network lets only H, H₂ and D stick to grains, so no CO or H₂O ice unless the user adds it.",
      "s": "meudon_dl",
-     "q": "The H2 formation by Langmuir-Hinshelwood and Eley-Rideal mechanisms (Le Bourlot et al. 2012) is included in the default chemistry files. Other surface reactions are not provided in the default chemistry files but can be easily introduced."
+     "q": "The H2 formation by Langmuir-Hinshelwood and Eley-Rideal mechanisms (Le Bourlot et al. 2012) is included in the default chemistry files. Other surface reactions are not provided in the default chemistry files but can be easily introduced.",
+     "code": {
+      "s": "codeme_ice",
+      "q": "CHSOR h       grain   h::                            1.00E+00  0.00   3.00e2  19 !\nELRID h       h::     h2                             1.00E+00  0.00     0.00  20 !\n  -                   -\nHYDRO h:      h:      h2                             1.00E+00  0.00     0.00  11 !\nADSOR h       grain   h:                             1.00E+00  0.00     0.00  13 !\nDESRC h:      crp     h                              1.00E+00  0.00     0.00  16 !\nPHODE h:      photon  h                              1.00E+00  0.00     0.00  17 !\nEVAPO h:      grain   h                              1.00E+00  0.00   658.00  18 !"
+     }
     },
     {
      "cap": "diffuse",
@@ -567,9 +694,20 @@ button[disabled]{opacity:.5;cursor:default}
     {
      "cap": "hydro",
      "v": "partial",
-     "t": "Applied along individual lines of sight through an MHD simulation.",
+     "t": "Applied along individual lines of sight through an MHD simulation; the code reads a user-supplied 1D density and temperature profile (f_StateEquation = 1).",
      "s": "levrier12",
-     "q": "The Meudon PDR code is then applied to a number of lines of sight through this model, to derive their chemical structures."
+     "q": "The Meudon PDR code is then applied to a number of lines of sight through this model, to derive their chemical structures.",
+     "code": {
+      "s": "codeme_eos",
+      "q": "0                                               ! f_StateEquation   : State equation (0: constant proton density model, 1: density profile provided by user, 2: isobaric model)"
+     }
+    },
+    {
+     "cap": "xray",
+     "v": "no",
+     "t": "The chemistry reader knows an X-ray reaction type, but X-ray heating is set to zero and the shipped network has no X-ray reactions.",
+     "s": "codeme_xray",
+     "q": "choxray(iopt) = 0.0_dp"
     }
    ]
   },
@@ -634,6 +772,24 @@ button[disabled]{opacity:.5;cursor:default}
      "Reproduces the benchmark results of 1D PDR codes",
      "bisbas12",
      "We find that the code is able to reproduce the benchmarking results of various other one-dimensional numerical codes treating PDRs."
+    ],
+    [
+     "H₂ self-shielding",
+     "Federman, Glassgold & Kwan (1979) fit; the Lee et al. (1996) table is in the code but not called",
+     "code3d_h2sh",
+     "H2PDRATE=K0*G0*H2SHIELD1(NH2,DOPW,RADW)*SCATTER(AV,LAMBDA)!/2.0"
+    ],
+    [
+     "CO shielding",
+     "van Dishoeck & Black (1988) table",
+     "code3d_cosh",
+     "COPDRATE=K0*G0*COSHIELD(NCO,NH2)*SCATTER(AV,LAMBDA)"
+    ],
+    [
+     "H₂ formation (shipped default)",
+     "Cazaux & Tielens (H2FORM = CT02) is on in the default build; SIMPLE and R07 are alternatives",
+     "code3d_h2form",
+     "H2FORM               = CT02"
     ]
    ],
    "claims": [
@@ -675,23 +831,35 @@ button[disabled]{opacity:.5;cursor:default}
     {
      "cap": "timedep",
      "v": "partial",
-     "t": "Chemistry is integrated to a chosen end time; the default (10 Myr) is set to reach equilibrium.",
+     "t": "Chemistry is integrated to a chosen end time, but the shipped default (CHEMSTEADY = 1) keeps integrating until abundances are steady.",
      "s": "itamos_params",
-     "q": "Entry 10: Chemical evolution end time (years). Default 10 Myr ensures chemical equilibrium; adjustable for younger cloud studies."
+     "q": "Entry 10: Chemical evolution end time (years). Default 10 Myr ensures chemical equilibrium; adjustable for younger cloud studies.",
+     "code": {
+      "s": "code3d_steady",
+      "q": "#CHEMSTEADY       : 1 - Continue each chemical integration in doubling time\n#                       blocks (up to 128x the evolution time) until no\n#                       species changes by >1% over a doubling. Otherwise the\n#                       chemical age of a grid point depends on how many\n#                       chemistry calls it received before its thermal balance\n#                       converged, leaving unphysical abundance jumps between\n#                       neighbouring points (recommended)"
+     }
     },
     {
      "cap": "cr",
      "v": "yes",
-     "t": "Optional softened-power-law cosmic-ray attenuation.",
+     "t": "Optional cosmic-ray attenuation with column density (Padovani L/H models or a softened power law); off by default.",
      "s": "itamos_params",
-     "q": "For softened-power-law cosmic ray attenuation, modify the parameter structure as follows:"
+     "q": "For softened-power-law cosmic ray attenuation, modify the parameter structure as follows:",
+     "code": {
+      "s": "code3d_cr",
+      "q": "#CRATTENUATION    : 1 - models CR attenuation (L/H of Padovani+ models)\n#                   0 - switch off (default)"
+     }
     },
     {
      "cap": "xray",
      "v": "no",
-     "t": "An X-ray flux input exists, but the manual advises against changing it in this version.",
+     "t": "An X-ray flux input exists, but the manual advises against changing it, and the code sets every X-ray reaction rate to zero.",
      "s": "itamos_params",
-     "q": "Entry 7: X-ray flux (erg/cm2/s). Not recommended to change in this version."
+     "q": "Entry 7: X-ray flux (erg/cm2/s). Not recommended to change in this version.",
+     "code": {
+      "s": "code3d_xray",
+      "q": "110     RATE(I)=0.0D0; GOTO 10\n120     RATE(I)=0.0D0; GOTO 10\n130     RATE(I)=0.0D0; GOTO 10\n140     RATE(I)=0.0D0; GOTO 10"
+     }
     },
     {
      "cap": "diffuse",
@@ -703,9 +871,20 @@ button[disabled]{opacity:.5;cursor:default}
     {
      "cap": "ices",
      "v": "partial",
-     "t": "Outputs separate gas and ice abundances; depth of surface chemistry depends on the network.",
+     "t": "The solver handles freeze-out and desorption reactions, but none of the networks shipped with the code contains ice species.",
      "s": "repo_3dpdr",
-     "q": "the total abundance of each element (H, He, C, N, O, S, Mg, …) relative to hydrogen, obtained by summing all species that contain it, split into gas and ice, with the main carriers."
+     "q": "the total abundance of each element (H, He, C, N, O, S, Mg, …) relative to hydrogen, obtained by summing all species that contain it, split into gas and ice, with the main carriers.",
+     "code": {
+      "s": "code3d_freeze",
+      "q": "IF(REACTANT(I,2).EQ.\"FREEZE\") GOTO 4\nIF(REACTANT(I,2).EQ.\"ELFRZE\") GOTO 5\nIF(REACTANT(I,2).EQ.\"CRH   \") GOTO 6\nIF(REACTANT(I,2).EQ.\"PHOTD \") GOTO 7\nIF(REACTANT(I,2).EQ.\"THERM \") GOTO 8"
+     }
+    },
+    {
+     "cap": "h2",
+     "v": "no",
+     "t": "Level populations are solved only for the CO, C⁺, C and O coolants; H₂ enters as a collision partner and through a self-shielding fit, not level by level.",
+     "s": "code3d_cool",
+     "q": "12co.dat\t\t   !CO Do not change the following order\n12c+.dat\t\t   !CII\n12c.dat  \t\t   !CI\n16o.dat  \t\t   !OI"
     }
    ]
   },
@@ -826,6 +1005,20 @@ button[disabled]{opacity:.5;cursor:default}
      "t": "Mostly static; time-dependent and dynamical runs exist but are described as not fully mature.",
      "s": "cloudy_qs",
      "q": "Most calculations assume that the cloud is static. The ability to do dynamical and time-dependent calculations is now in the code although this part is not fully mature."
+    },
+    {
+     "cap": "ices",
+     "v": "partial",
+     "t": "CO, H₂O and OH can freeze onto grains (on by default when grains are present); no wider grain-surface chemistry.",
+     "s": "codecl_ice",
+     "q": "(void) newspecies(\"COgrn \",MOLECULE,MOLE_ACTIVE, -113.8f);\n(void) newspecies(\"H2Ogrn\",MOLECULE,MOLE_ACTIVE, -238.9f);\n(void) newspecies(\"OHgrn \",MOLECULE,MOLE_ACTIVE, 38.4f);"
+    },
+    {
+     "cap": "cr",
+     "v": "partial",
+     "t": "The cosmic-ray density can follow a power law in radius; no attenuation with column density was found in the code.",
+     "s": "codecl_cr",
+     "q": "CosRayDen = hextra.cryden*pow(radius.Radius/radius.rinner,(double)hextra.crpowr);"
     }
    ]
   },
@@ -891,10 +1084,14 @@ button[disabled]{opacity:.5;cursor:default}
     },
     {
      "cap": "thermal",
-     "v": "no",
-     "t": "Density and temperature are inputs (user-defined or parametrized), not solved from heating and cooling.",
+     "v": "partial",
+     "t": "Density and temperature are inputs by default; an optional heating and cooling solver (heatingFlag, off by default) has been in the code since December 2025, before the v4.0.0 tag.",
      "s": "vermarien26",
-     "q": "self-consistently coupled to either a user-defined or parametrized physical evolution of density, temperature and other physical input parameters."
+     "q": "self-consistently coupled to either a user-defined or parametrized physical evolution of density, temperature and other physical input parameters.",
+     "code": {
+      "s": "codeuc_heat",
+      "q": "LOGICAL :: heatingFlag=.false. !If True, heating is applied to the gas parcels."
+     }
     },
     {
      "cap": "cores",
@@ -930,6 +1127,20 @@ button[disabled]{opacity:.5;cursor:default}
      "t": "Computes the chemistry of a single parcel of gas and dust.",
      "s": "vermarien26",
      "q": "UCLCHEM is a comprehensive gas-grain astrochemical modelling framework that can compute the chemical evolution inside a parcel of gas and dust under a specified, time-dependent physical description."
+    },
+    {
+     "cap": "cr",
+     "v": "yes",
+     "t": "Optional cosmic-ray attenuation with column density (Padovani et al. 2018 L/H models); off by default.",
+     "s": "codeuc_cr",
+     "q": "LOGICAL :: cosmicRayAttenuation=.False. !Use column density to attenuate cosmic ray ionization rate following [Padovani et al. 2018](https://arxiv.org/abs/1803.09348)."
+    },
+    {
+     "cap": "pdr",
+     "v": "partial",
+     "t": "The UV field is attenuated as exp(−3.02 A_V), with H₂ and CO self-shielding; there is no FUV radiative transfer.",
+     "s": "codeuc_uv",
+     "q": "&    radfield*EXP(-UV_FAC*av(dstep)) + radfield_internal(dstep)*EXP(-UV_FAC*av_internal(dstep)), &   ! attenuated radiation field"
     }
    ]
   }
@@ -1123,6 +1334,40 @@ button[disabled]{opacity:.5;cursor:default}
     ]
    ]
   }
+ ],
+ "tbd": [
+  [
+   "COSTAR",
+   "I. Kamp, F. Bertoldi, G.-J. van Zadelhoff"
+  ],
+  [
+   "HTBKW",
+   "D. Hollenbach, A. G. G. M. Tielens, M. G. Burton, M. J. Kaufman, M. G. Wolfire"
+  ],
+  [
+   "KOSMA-τ",
+   "H. Störzer, J. Stutzki, A. Sternberg, B. Köster, M. Zielinsky, U. Leuenhagen"
+  ],
+  [
+   "Lee96mod",
+   "H.-H. Lee, E. Herbst, G. Pineau des Forêts, E. Roueff, J. Le Bourlot, O. Morata"
+  ],
+  [
+   "Leiden",
+   "J. Black, E. van Dishoeck, D. Jansen, B. Jonkheid"
+  ],
+  [
+   "Meijerink",
+   "R. Meijerink, M. Spaans"
+  ],
+  [
+   "Sternberg",
+   "A. Sternberg, A. Dalgarno"
+  ],
+  [
+   "UCL_PDR",
+   "S. Viti, W.-F. Thi, T. Bell"
+  ]
  ]
 }
 </script>
@@ -1263,7 +1508,7 @@ function mark(v,withWord){const w=el('span'); const s=el('span','mk '+v,MK[v][0]
 function link(href,txt){const a=el('a','',txt); a.href=href; a.target='_blank'; a.rel='noopener'; return a;}
 function evidence(sid,q){const S=KB.sources[sid]; const d=el('details','ev');
   d.append(el('summary','','Source: '+S.cite.split(' — ')[0]));
-  d.append(el('blockquote','','“'+q+'”'));
+  d.append(S.kind==='code'?el('blockquote','code',q):el('blockquote','','“'+q+'”'));
   const p=el('div','src'); p.append(document.createTextNode(S.cite+'. '),link(S.url,'Open source'));
   if(S.doi){p.append(document.createTextNode(' · ')); p.append(link('https://doi.org/'+S.doi,'doi:'+S.doi));}
   d.append(p); return d;}
@@ -1295,7 +1540,7 @@ function renderAdvice(){ if(!KB) return; const a=advAnswers(); try{localStorage.
       li.append(el('h3','grp-h',label+' ('+rows.length+')')); const ul=el('ul','why');
       rows.forEach(x=>{const row=el('li'); const m=el('span','mk '+x.v,MK[x.v][0]); m.setAttribute('aria-hidden','true'); const b=el('div');
         const line=el('div'); const lab=el('span','',KB.caps[x.cap]+'. '); lab.style.fontWeight='500'; line.append(lab,document.createTextNode(x.claim?x.claim.t:'No statement in the sources gathered; check the official documentation.'));
-        b.append(line); if(x.claim) b.append(evidence(x.claim.s,x.claim.q)); row.append(m,b); ul.append(row);});
+        b.append(line); if(x.claim) b.append(evidence(x.claim.s,x.claim.q)); if(x.claim&&x.claim.code) b.append(evidence(x.claim.code.s,x.claim.code.q)); row.append(m,b); ul.append(row);});
       li.append(ul);});
     if(r.code.board&&reports.length){const n=reports.filter(p=>p.status!=='resolved'&&(p.dbs||[]).includes(r.code.board)).length; if(n) li.append(el('p','note',n+' open rate report'+(n===1?'':'s')+' on this board concern '+r.code.board+'.'));}
     ol.append(li);});
@@ -1310,9 +1555,10 @@ function renderCodes(){ if(!KB) return; const caps=Object.keys(KB.caps);
     const dl=el('dl','kv'); c.facts.forEach(([k,v,sid,q])=>{dl.append(el('dt','',k)); const dd=el('dd'); dd.append(el('div','',v),evidence(sid,q)); dl.append(dd);}); s.append(dl);
     s.append(el('h3','','What its sources state'));
     const ul=el('ul','caps'); caps.forEach(k=>{const cl=c.claims.find(x=>x.cap===k); if(!cl) return; const li=el('li'); const m=el('span','mk '+cl.v,MK[cl.v][0]); m.setAttribute('aria-hidden','true'); const b=el('div');
-      const line=el('div'); line.append(el('span','sr',MK[cl.v][1]+': '),el('span','lbl',KB.caps[k]+'. '),document.createTextNode(cl.t)); b.append(line,evidence(cl.s,cl.q)); li.append(m,b); ul.append(li);}); s.append(ul);
+      const line=el('div'); line.append(el('span','sr',MK[cl.v][1]+': '),el('span','lbl',KB.caps[k]+'. '),document.createTextNode(cl.t)); b.append(line,evidence(cl.s,cl.q)); if(cl.code) b.append(evidence(cl.code.s,cl.code.q)); li.append(m,b); ul.append(li);}); s.append(ul);
     const miss=caps.filter(k=>!c.claims.some(x=>x.cap===k)); if(miss.length) s.append(el('p','note','Not documented in our sources: '+miss.map(k=>KB.caps[k]).join('; ')+'.'));
     box.append(s);});
+  const tl=$('#tbd-list'); (KB.tbd||[]).forEach(([n,a])=>{const li=el('li'); li.append(el('b','',n),document.createTextNode(' — '+a)); tl.append(li);});
   const sl=$('#src-list'); Object.values(KB.sources).forEach(S=>{const li=el('li'); li.append(document.createTextNode(S.cite+'. '),link(S.url,S.url.replace(/^https?:\/\//,''))); if(S.doi) li.append(document.createTextNode(' · doi:'+S.doi)); sl.append(li);});}
 if(KB){buildAdvisor(); renderAdvice(); renderCodes();}
 else{$('#adv-out').append(el('div','empty','The code knowledge base could not be read.'));}

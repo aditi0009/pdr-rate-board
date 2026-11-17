@@ -15,6 +15,7 @@ for (const c of kb.codes) {
     assert.ok(kb.caps[x.cap], `${c.id}: unknown cap ${x.cap}`);
     assert.ok(['yes', 'partial', 'no'].includes(x.v), `${c.id}/${x.cap}: bad value ${x.v}`);
     assert.ok(kb.sources[x.s] && x.q && x.t, `${c.id}/${x.cap}: missing source, quote or text`);
+    if (x.code) assert.ok(kb.sources[x.code.s]?.kind === 'code' && x.code.q, `${c.id}/${x.cap}: code evidence needs a code source and quote`);
   }
   assert.equal(new Set(c.claims.map(x => x.cap)).size, c.claims.length, `${c.id}: duplicate cap`);
   for (const [k, v, s, q] of c.facts) assert.ok(kb.sources[s] && q && v, `${c.id}/${k}: unsourced fact`);
@@ -29,6 +30,7 @@ assert.equal(top({ obj: ['xray'] }), 'cloudy');
 assert.equal(top({ obj: ['pdr'], obs: ['lines'], extra: ['h2', 'cr'] }), 'meudon');
 // Silence is not a "no": a code with no claim for a requirement scores 0, one with "no" scores below it.
 const r = scoreCodes(kb, ['xray']);
-assert.ok(r.find(x => x.code.id === 'meudon').score > r.find(x => x.code.id === '3dpdr').score);
+assert.ok(r.find(x => x.code.id === 'uclchem').score > r.find(x => x.code.id === '3dpdr').score);
+assert.ok(Array.isArray(kb.tbd) && kb.tbd.every(([n, a]) => n && a && !kb.codes.some(c => c.name === n)), 'tbd: name and authors, not already a code');
 assert.deepEqual(needsFrom(kb, {}), []);
 console.log('advisor: all checks passed');
